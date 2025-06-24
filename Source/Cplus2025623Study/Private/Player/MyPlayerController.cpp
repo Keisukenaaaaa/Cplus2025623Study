@@ -5,9 +5,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
+
 AMyPlayerController::AMyPlayerController()
 {
-	bReplicates = true;//ÊÇ·ñ½«Êı¾İ´«ËÍ·şÎñÆ÷¸üĞÂ
+	bReplicates = true;//æ˜¯å¦å°†æ•°æ®ä¼ é€æœåŠ¡å™¨æ›´æ–°
 }
 
 void AMyPlayerController::BeginPlay()
@@ -17,17 +18,44 @@ void AMyPlayerController::BeginPlay()
 
 	check(AuraContext);
 
-	//´Ó±¾µØ½ÇÉ«ÉíÉÏ»ñÈ¡µ½ËüµÄ×ÓÏµÍ³
+	//ä»æœ¬åœ°è§’è‰²èº«ä¸Šè·å–åˆ°å®ƒçš„å­ç³»ç»Ÿ
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	check(Subsystem);
-	Subsystem->AddMappingContext(AuraContext, 0);//¿ÉÒÔ´æÔÚ¶à¸ö²Ù×÷Ó³Éä£¬¸ù¾İÓÅÏÈ¼¶´¥·¢
+	Subsystem->AddMappingContext(AuraContext, 0);//å¯ä»¥å­˜åœ¨å¤šä¸ªæ“ä½œæ˜ å°„ï¼Œæ ¹æ®ä¼˜å…ˆçº§è§¦å‘
 
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 	
 	FInputModeGameAndUI InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);//½«Êó±êËø¶¨ÔÚÊÓ¿ÚÄÚ
-	InputModeData.SetHideCursorDuringCapture(false);//Êó±ê±»²¶»ñÊ±ÊÇ·ñÒş²Ø
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);//å°†é¼ æ ‡é”å®šåœ¨è§†å£å†…
+	InputModeData.SetHideCursorDuringCapture(false);//é¼ æ ‡è¢«æ•è·æ—¶æ˜¯å¦éšè—
 	SetInputMode(InputModeData);
 
+
+
+}
+
+void AMyPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
+}
+
+void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
+{
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+	const FRotator Rotation = GetControlRotation();
+	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	if (APawn* ControlledPawn = GetPawn<APawn>()) 
+	{
+		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+	}
 }

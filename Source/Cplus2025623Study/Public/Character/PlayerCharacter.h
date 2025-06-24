@@ -13,5 +13,8 @@ UCLASS()
 class CPLUS2025623STUDY_API APlayerCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
+
+public:
+	APlayerCharacter();
 	
 };
