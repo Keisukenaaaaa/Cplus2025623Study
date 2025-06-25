@@ -9,6 +9,7 @@
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class IEnemyInterface;
 /**
  * 
  */
@@ -16,6 +17,7 @@ UCLASS()
 class CPLUS2025623STUDY_API AMyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	virtual void PlayerTick(float DeltaTime) override;
 
 public:
 
@@ -32,4 +34,8 @@ private:
 	TObjectPtr<UInputAction>MoveAction;
 	
 	void Move(const FInputActionValue& InputActionValue);
+	
+	void CursorTrace();
+	IEnemyInterface* LastActor;
+	IEnemyInterface* ThisActor;
 };

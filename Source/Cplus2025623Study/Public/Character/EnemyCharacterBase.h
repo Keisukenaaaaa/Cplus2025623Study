@@ -4,14 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Character/CharacterBase.h"
+#include "Interaction/EnemyInterface.h"
 #include "EnemyCharacterBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CPLUS2025623STUDY_API AEnemyCharacterBase : public ACharacterBase
+class CPLUS2025623STUDY_API AEnemyCharacterBase : public ACharacterBase, public IEnemyInterface
 {
 	GENERATED_BODY()
+
+public:
+	virtual void HighlightActor() override;
+	virtual void UnHighlightActor() override;
 	
+	UPROPERTY(BlueprintReadOnly)
+	bool bHighlighted = false;
 };

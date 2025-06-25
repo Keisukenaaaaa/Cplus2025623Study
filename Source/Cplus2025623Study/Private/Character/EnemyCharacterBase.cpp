@@ -3,3 +3,12 @@
 
 #include "Character/EnemyCharacterBase.h"
 
+void AEnemyCharacterBase::HighlightActor()
+{
+	bHighlighted = true;
+}
+
+void AEnemyCharacterBase::UnHighlightActor()
+{
+	bHighlighted = false;
+}
