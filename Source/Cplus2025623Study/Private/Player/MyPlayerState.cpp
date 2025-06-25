@@ -1,0 +1,9 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Player/MyPlayerState.h"
+
+AMyPlayerState::AMyPlayerState()
+{
+	NetUpdateFrequency = 100.f;
+}

@@ -1,0 +1,17 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
+#include "MyAbilitySystemComponentBase.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class CPLUS2025623STUDY_API UMyAbilitySystemComponentBase : public UAbilitySystemComponent
+{
+	GENERATED_BODY()
+	
+};

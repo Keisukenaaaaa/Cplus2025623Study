@@ -16,9 +16,9 @@ class CPLUS2025623STUDY_API AEnemyCharacterBase : public ACharacterBase, public 
 	GENERATED_BODY()
 
 public:
+	AEnemyCharacterBase();
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
 	
-	UPROPERTY(BlueprintReadOnly)
-	bool bHighlighted = false;
+
 };
