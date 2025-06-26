@@ -2,15 +2,20 @@
 
 #pragma once
 
+#include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "MyPlayerState.generated.h"
+
+
+class UAbilitySystemComponent;
+class UAttributeSet;
 
 /**
  * 
  */
 UCLASS()
-class CPLUS2025623STUDY_API AMyPlayerState : public APlayerState
+class CPLUS2025623STUDY_API AMyPlayerState : public APlayerState,public IAbilitySystemInterface
 {
 
 	GENERATED_BODY()
@@ -18,6 +23,16 @@ class CPLUS2025623STUDY_API AMyPlayerState : public APlayerState
 
 public:
 	AMyPlayerState();
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+
+protected:
+	UPROPERTY();
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY();
+	TObjectPtr<UAttributeSet> AttributeSet;
+
+
 
 	
 };
