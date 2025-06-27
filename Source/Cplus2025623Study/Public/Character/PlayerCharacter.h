@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Character/CharacterBase.h"
+#include "AbilitySystemComponent.h"   
 #include "PlayerCharacter.generated.h"
-#include "AbilitySystemComponent.h"    
 
 /**
  * 
