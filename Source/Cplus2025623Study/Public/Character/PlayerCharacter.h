@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/CharacterBase.h"
 #include "PlayerCharacter.generated.h"
+#include "AbilitySystemComponent.h"    
 
 /**
  * 
@@ -16,5 +17,8 @@ class CPLUS2025623STUDY_API APlayerCharacter : public ACharacterBase
 
 public:
 	APlayerCharacter();
-	
+	virtual void PossessedBy(AController* NewController)override;
+	virtual void OnRep_PlayerState() override;
+private:
+	void InitAbilityActorInfo();
 };
