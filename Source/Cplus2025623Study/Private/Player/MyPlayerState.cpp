@@ -12,6 +12,7 @@ AMyPlayerState::AMyPlayerState()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponentBase>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true); //设置组件用于在网络上复制
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed); //设置组件用于在网络上复制
 
 	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>("AttributeSet");
 	NetUpdateFrequency = 100.f;
