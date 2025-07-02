@@ -3,7 +3,9 @@
 
 #include "Character/PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/MyPlayerController.h"
 #include "Player/MyPlayerState.h"
+#include "UI/HUD/MyHUD.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -41,4 +43,11 @@ void APlayerCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = MyPlayerState->GetAbilitySystemComponent();
 	AttributeSet = MyPlayerState->GetAttributeSet();
 
+	if (AMyPlayerController* MyPlayerController=Cast<AMyPlayerController>(GetController()))
+	{
+		if (AMyHUD* MyHUD = Cast<AMyHUD>(MyPlayerController->GetHUD()))
+		{
+			MyHUD->InitOverlay(MyPlayerController,MyPlayerState,AbilitySystemComponent,AttributeSet);
+		}
+	}
 }
