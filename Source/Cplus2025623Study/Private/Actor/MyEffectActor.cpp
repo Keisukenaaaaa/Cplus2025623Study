@@ -42,8 +42,9 @@ void AMyEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		UMyAttributeSet* AttributeSet =Cast<UMyAttributeSet>(TargetPlayerState->GetAttributeSet());
 		
 		AttributeSet->SetHealth(AttributeSet->GetHealth()+25.f);
-		Destroy();
+		//Destroy();
 	}
+	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor)) {}
 
 }
 // void AMyEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

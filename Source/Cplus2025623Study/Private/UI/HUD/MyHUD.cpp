@@ -18,7 +18,7 @@ UMyOverlayWidgetController* AMyHUD::GetOverlayWidgetController(const FWidgetCont
 	return OverlayWidgetController;
 }
 
-void AMyHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+void AMyHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)//这一整段什么意思
 {
 
 	checkf(OverlayWidgetClass,TEXT("Overlay Widget Class 没有弄好,去把BPHUD填进去"));
@@ -32,7 +32,7 @@ void AMyHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystem
 	UMyOverlayWidgetController* WidgetController=GetOverlayWidgetController(WidgetControllerParams);
 
 	OverlayWidget->SetWidgetController(WidgetController);//什么是成员变量
-	
+	WidgetController->BroadcastInitialValues();
 
 	
 	Widget->AddToViewport();
