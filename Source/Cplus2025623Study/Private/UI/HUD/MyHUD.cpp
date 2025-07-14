@@ -12,6 +12,7 @@ UMyOverlayWidgetController* AMyHUD::GetOverlayWidgetController(const FWidgetCont
 	{
 		OverlayWidgetController=NewObject<UMyOverlayWidgetController>(this,OverlayWidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		OverlayWidgetController->BindCallbacksToDependencies();
 
 		return OverlayWidgetController;
 	}
@@ -33,8 +34,6 @@ void AMyHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystem
 
 	OverlayWidget->SetWidgetController(WidgetController);//什么是成员变量
 	WidgetController->BroadcastInitialValues();
-
-	
 	Widget->AddToViewport();
 }
 

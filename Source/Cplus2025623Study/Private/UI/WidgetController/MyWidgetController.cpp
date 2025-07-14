@@ -15,3 +15,7 @@ void UMyWidgetController::BroadcastInitialValues()
 {
 	
 }
+
+void UMyWidgetController::BindCallbacksToDependencies()
+{
+}
