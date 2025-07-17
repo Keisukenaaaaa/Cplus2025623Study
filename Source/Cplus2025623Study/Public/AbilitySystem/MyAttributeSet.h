@@ -18,6 +18,7 @@ class CPLUS2025623STUDY_API UMyAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 public:
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	UMyAttributeSet();
 	//为什么可以直接以脚本名为方法建立函数 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//啥意思

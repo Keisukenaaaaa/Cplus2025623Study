@@ -6,6 +6,33 @@
 
 #include"Net/UnrealNetwork.h"
 
+void UMyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+	if(Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+		UE_LOG(LogTemp, Warning, TEXT("Health: %f"), NewValue);
+	}
+
+	if(Attribute == GetMaxHealthAttribute())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MaxHealth: %f"), NewValue);
+	}
+
+	if(Attribute == GetManaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+		UE_LOG(LogTemp, Warning, TEXT("Mana: %f"), NewValue);
+	}
+
+	if(Attribute == GetMaxManaAttribute())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MaxMana: %f"), NewValue);
+	}
+
+}
+
 UMyAttributeSet::UMyAttributeSet()
 {
 	InitHealth(30.f);//这个宏的用法是什么 为什么可以定义了宏就直接用这个方法了
