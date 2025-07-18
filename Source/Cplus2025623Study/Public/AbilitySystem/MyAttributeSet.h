@@ -13,15 +13,58 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+USTRUCT()
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties(){}
+
+	FGameplayEffectContextHandle EffectContextHandle;
+
+	UPROPERTY()
+	UAbilitySystemComponent* SourceASC=nullptr;
+
+	UPROPERTY()
+	AActor* SourceAvatarActor=nullptr;
+	
+	UPROPERTY()
+	AController* SourceController=nullptr;
+
+	UPROPERTY()
+	ACharacter* SourceCharacter=nullptr;
+
+	UPROPERTY()
+	UAbilitySystemComponent* TargetASC=nullptr;
+
+	UPROPERTY()
+	AActor* TargetAvatarActor=nullptr;
+
+	UPROPERTY()
+	AController* TargetController=nullptr;
+
+	UPROPERTY()
+	ACharacter* TargetCharacter=nullptr;
+};
+
+
+
+
 UCLASS()
 class CPLUS2025623STUDY_API UMyAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
+	
 public:
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	UMyAttributeSet();
 	//为什么可以直接以脚本名为方法建立函数 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;//啥意思
+	
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
+	
+	
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
@@ -50,5 +93,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const; //此处的两个const分别代表什么
+	
+private:
+	
+	static void SetEffectProperties(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props);
 
 };
