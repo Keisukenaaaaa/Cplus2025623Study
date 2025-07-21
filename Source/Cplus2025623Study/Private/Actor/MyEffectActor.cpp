@@ -48,10 +48,10 @@ void AMyEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGamep
 	//设置创建Effect的对象
 	EffectContextHandle.AddSourceObject(this);
 	//Effect的实例化后的句柄,可以通过此来寻找调用
-	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass,1.f,EffectContextHandle);
+	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass,ActorLevel,EffectContextHandle);
 	//从句柄中获取到实例的地址,并被应用
 	const FActiveGameplayEffectHandle ActiveGameplayEffectHandle=TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
-	TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	
 
 
 	//从句柄中获取到实例的地址,并被应用
@@ -115,7 +115,7 @@ void AMyEffectActor::OnEndOverlap(AActor* TargetActor)
 			{
 				//通过句柄将效果一出,注意,有可能有多层效果,不能一下把所有效果remove了;
 				//此处尝试将 remove的层数变成可以蓝图里编辑的变量
-				TargetASC->RemoveActiveGameplayEffect(HandlePair.Key,1);
+				TargetASC->RemoveActiveGameplayEffect(HandlePair.Key,ActorRemoveTier);
 				//添加到移除列表
 				HandlesToRemove.Add(HandlePair.Key);
 			}

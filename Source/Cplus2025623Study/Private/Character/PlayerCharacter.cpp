@@ -2,6 +2,8 @@
 
 
 #include "Character/PlayerCharacter.h"
+
+#include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/MyPlayerController.h"
 #include "Player/MyPlayerState.h"
@@ -39,10 +41,17 @@ void APlayerCharacter::InitAbilityActorInfo()
 {
 	AMyPlayerState* MyPlayerState = GetPlayerState<AMyPlayerState>();
 	check(MyPlayerState);
-	MyPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(MyPlayerState, this);
+	
+	// MyPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(MyPlayerState, this);
+
+	
 	AbilitySystemComponent = MyPlayerState->GetAbilitySystemComponent();
 	AttributeSet = MyPlayerState->GetAttributeSet();
-
+	//初始化ASC
+	AbilitySystemComponent ->InitAbilityActorInfo(MyPlayerState,this);
+	//出发Actor的技能信息回调
+	Cast<UMyAbilitySystemComponentBase>(AbilitySystemComponent)->AbilityActorInfoSet();
+	
 	if (AMyPlayerController* MyPlayerController=Cast<AMyPlayerController>(GetController()))
 	{
 		if (AMyHUD* MyHUD = Cast<AMyHUD>(MyPlayerController->GetHUD()))
