@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/MyOverlayWidgetController.h"
 
+#include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
 
 void UMyOverlayWidgetController::BroadcastInitialValues()
@@ -33,7 +34,30 @@ void UMyOverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		MyAttributeSetBase->GetMaxManaAttribute()).AddUObject(this, &UMyOverlayWidgetController::MaxManaChanged);
 	
-                        
+	//ADDLambda 绑定匿名函数
+
+	Cast<UMyAbilitySystemComponentBase>(AbilitySystemComponent)->EffectAssetTags.AddLambda
+	([this](const FGameplayTagContainer& AssetTags)
+	{
+		for (const FGameplayTag& Tag : AssetTags)
+		{
+			//将tag广播给Widget Controller
+			const FString Msg = FString::Printf(TEXT("GE Tag in Widget Controller: %s"), *Tag.ToString()); //获取Asset Tag
+			GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Cyan, Msg); //打印到屏幕上 -1 不会被覆盖
+
+			FUIWidgetRow* Row=GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable,Tag);
+			
+			// FGameplayTag MessageTag=FGameplayTag::RequestGameplayTag(FName("Message"));
+			// if (Tag.MatchesTag(MessageTag))
+			// {
+			// 	FUIWidgetRow* Row=GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable,Tag);
+			// 	MessageWidgetRowDelegate.B
+			// }
+			
+		}
+	}
+		
+	);
 
 }
 
