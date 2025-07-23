@@ -7,6 +7,8 @@
 #include "UI/WidgetController/MyWidgetController.h"
 #include "MyOverlayWidgetController.generated.h"
 
+class UMyUserWidget;
+
 USTRUCT(BlueprintType)
 struct FUIWidgetRow:public FTableRowBase
 {
@@ -83,3 +85,5 @@ T* UMyOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const
 	T*Row = DataTable->FindRow<T>(Tag.GetTagName(),TEXT(""));
 	return Row;
 }
+
+
