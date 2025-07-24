@@ -12,8 +12,10 @@ void UMyOverlayWidgetController::BroadcastInitialValues()
 	 const UMyAttributeSet* MyAttributeSet=CastChecked<UMyAttributeSet>(AttributeSet);//此处的const什么意思
 
 	OnHealthChanged.Broadcast(MyAttributeSet->GetHealth());
+	OnGhostHealthChanged.Broadcast(MyAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(MyAttributeSet->GetMaxHealth());
 	OnManaChanged.Broadcast(MyAttributeSet->GetMana());
+	OnGhostManaChanged.Broadcast(MyAttributeSet->GetMana());
 	OnMaxManaChanged.Broadcast(MyAttributeSet->GetMaxMana());
 
 	
@@ -24,17 +26,18 @@ void UMyOverlayWidgetController::BindCallbacksToDependencies()
 	const UMyAttributeSet* MyAttributeSetBase = CastChecked<UMyAttributeSet>(AttributeSet);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		MyAttributeSetBase->GetHealthAttribute()).AddUObject(this, &UMyOverlayWidgetController::HealthChanged);
+		MyAttributeSetBase->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+				OnGhostHealthChanged.Broadcast(Data.OldValue);
+			}
+		);
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		MyAttributeSetBase->GetMaxHealthAttribute()).AddUObject(this, &UMyOverlayWidgetController::MaxHealthChanged);
-	
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		MyAttributeSetBase->GetManaAttribute()).AddUObject(this, &UMyOverlayWidgetController::ManaChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChanged.Broadcast(Data.NewValue);OnMaxHealthChanged.Broadcast(Data.OldValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetManaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnManaChanged.Broadcast(Data.NewValue);OnGhostManaChanged.Broadcast(Data.OldValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetMaxManaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxManaChanged.Broadcast(Data.NewValue);OnMaxManaChanged.Broadcast(Data.OldValue);});
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		MyAttributeSetBase->GetMaxManaAttribute()).AddUObject(this, &UMyOverlayWidgetController::MaxManaChanged);
-	
 	//ADDLambda 绑定匿名函数
 
 	Cast<UMyAbilitySystemComponentBase>(AbilitySystemComponent)->EffectAssetTags.AddLambda
@@ -65,22 +68,3 @@ void UMyOverlayWidgetController::BindCallbacksToDependencies()
 
 }
 
-void UMyOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const 
-{
-	OnHealthChanged.Broadcast(Data.NewValue);
-}
-
-void UMyOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
-}
-
-void UMyOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnManaChanged.Broadcast(Data.NewValue);
-}
-
-void UMyOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxManaChanged.Broadcast(Data.NewValue);
-}
