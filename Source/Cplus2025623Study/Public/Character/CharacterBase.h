@@ -10,6 +10,7 @@
 
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UGameplayEffect;
 
 UCLASS(Abstract)
 class CPLUS2025623STUDY_API ACharacterBase : public ACharacter, public IAbilitySystemInterface
@@ -35,6 +36,12 @@ protected:
 	UPROPERTY();
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	//const写在哪里都可以吗
+	void InitializePrimaryAttributes() const;
+	
 	virtual void InitAbilityActorInfo();
 
 };

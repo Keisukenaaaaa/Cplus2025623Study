@@ -66,6 +66,17 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 
 	FEffectProperties Props;
 	SetEffectProperties(Data,Props);Super::PostGameplayEffectExecute(Data);
+
+	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(  FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+	
+	if(Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana ( FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+	}
+	
 }
 
 
@@ -90,6 +101,26 @@ void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 
+}
+
+void UMyAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Strength, OldStrength);
+}
+
+void UMyAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Intelligence, OldIntelligence);
+}
+
+void UMyAttributeSet::OnRep_Resilience(const FGameplayAttributeData& OldResilience) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Resilience, OldResilience);
+}
+
+void UMyAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, Vigor, OldVigor);
 }
 
 void UMyAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
