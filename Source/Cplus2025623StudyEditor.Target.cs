@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class Cplus2025623StudyEditorTarget : TargetRules
 {
-	public Cplus2025623StudyEditorTarget( TargetInfo Target) : base(Target)
+	public Cplus2025623StudyEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;

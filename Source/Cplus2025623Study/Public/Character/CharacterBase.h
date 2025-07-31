@@ -39,8 +39,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
-	//const写在哪里都可以吗
-	void InitializePrimaryAttributes() const;
+	//const写在哪里都可以吗 A:不行
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+	
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass,float Level) const;
+
+	void InitializeDefaultAttributes() const;
+
+	
 	
 	virtual void InitAbilityActorInfo();
 
