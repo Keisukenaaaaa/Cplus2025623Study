@@ -19,6 +19,10 @@ public:
 	APlayerCharacter();
 	virtual void PossessedBy(AController* NewController)override;
 	virtual void OnRep_PlayerState() override;
+
+	/** Combat Inferface */
+	virtual int32 GetPlayerLevel() override;
+	/** end Combat Inferface */
 private:
 	virtual void InitAbilityActorInfo() override;
 };

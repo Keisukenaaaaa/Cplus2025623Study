@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 #include "CharacterBase.generated.h"
 
 class UAbilitySystemComponent;
@@ -13,7 +14,7 @@ class UAttributeSet;
 class UGameplayEffect;
 
 UCLASS(Abstract)
-class CPLUS2025623STUDY_API ACharacterBase : public ACharacter, public IAbilitySystemInterface
+class CPLUS2025623STUDY_API ACharacterBase : public ACharacter, public IAbilitySystemInterface,public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -42,6 +43,9 @@ protected:
 	//const写在哪里都可以吗 A:不行
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
 	
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass,float Level) const;
 

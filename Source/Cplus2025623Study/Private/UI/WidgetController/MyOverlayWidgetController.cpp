@@ -12,10 +12,8 @@ void UMyOverlayWidgetController::BroadcastInitialValues()
 	 const UMyAttributeSet* MyAttributeSet=CastChecked<UMyAttributeSet>(AttributeSet);//此处的const什么意思
 
 	OnHealthChanged.Broadcast(MyAttributeSet->GetHealth());
-	OnGhostHealthChanged.Broadcast(MyAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(MyAttributeSet->GetMaxHealth());
 	OnManaChanged.Broadcast(MyAttributeSet->GetMana());
-	OnGhostManaChanged.Broadcast(MyAttributeSet->GetMana());
 	OnMaxManaChanged.Broadcast(MyAttributeSet->GetMaxMana());
 
 	
@@ -30,13 +28,13 @@ void UMyOverlayWidgetController::BindCallbacksToDependencies()
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnHealthChanged.Broadcast(Data.NewValue);
-				OnGhostHealthChanged.Broadcast(Data.OldValue);
+		
 			}
 		);
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChanged.Broadcast(Data.NewValue);OnMaxHealthChanged.Broadcast(Data.OldValue);});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetManaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnManaChanged.Broadcast(Data.NewValue);OnGhostManaChanged.Broadcast(Data.OldValue);});
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetMaxManaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxManaChanged.Broadcast(Data.NewValue);OnMaxManaChanged.Broadcast(Data.OldValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxHealthChanged.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetManaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnManaChanged.Broadcast(Data.NewValue);});
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(MyAttributeSetBase->GetMaxManaAttribute()).AddLambda([this](const FOnAttributeChangeData& Data){OnMaxManaChanged.Broadcast(Data.NewValue);});
 
 	//ADDLambda 绑定匿名函数
 

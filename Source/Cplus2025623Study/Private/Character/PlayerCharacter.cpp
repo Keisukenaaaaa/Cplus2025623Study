@@ -37,6 +37,13 @@ void APlayerCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 APlayerCharacter::GetPlayerLevel()
+{
+	const AMyPlayerState* MyPlayerState = GetPlayerState<AMyPlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->GetPlayerLevel();
+}
+
 void APlayerCharacter::InitAbilityActorInfo()
 {
 	AMyPlayerState* MyPlayerState = GetPlayerState<AMyPlayerState>();
