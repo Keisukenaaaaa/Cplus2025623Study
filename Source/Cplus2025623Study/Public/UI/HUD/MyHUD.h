@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/HUD.h"
 #include "UI/Widget/MyUserWidget.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
+#include "UI/WidgetController/MyOverlayWidgetController.h"
 
 #include "MyHUD.generated.h"
 
@@ -25,6 +27,7 @@ public:
 	UPROPERTY()
 	TObjectPtr<UMyUserWidget> OverlayWidget;
 
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
 	UMyOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController*PC,APlayerState*PS,UAbilitySystemComponent*ASC,UAttributeSet*AS);
@@ -43,4 +46,18 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMyOverlayWidgetController>	OverlayWidgetControllerClass;
+
+
+	// UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
+	// UPROPERTY()
+	// TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<UAttributeMenuWidgetController>	AttributeMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+	
+
 };

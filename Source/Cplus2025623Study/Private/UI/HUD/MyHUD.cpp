@@ -4,7 +4,7 @@
 #include "UI/HUD/MyHUD.h"
 
 #include "Blueprint/UserWidget.h"
-#include "UI/WidgetController/MyOverlayWidgetController.h"
+
 
 UMyOverlayWidgetController* AMyHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
@@ -35,5 +35,16 @@ void AMyHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystem
 	OverlayWidget->SetWidgetController(WidgetController);//什么是成员变量
 	WidgetController->BroadcastInitialValues();
 	Widget->AddToViewport();
+}
+
+UAttributeMenuWidgetController* AMyHUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (AttributeMenuWidgetController==nullptr)
+	{
+		AttributeMenuWidgetController=NewObject<UAttributeMenuWidgetController>(this,AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(WCParams);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+	}
+	return AttributeMenuWidgetController;
 }
 
