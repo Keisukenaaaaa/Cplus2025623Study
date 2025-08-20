@@ -14,7 +14,7 @@ UMyOverlayWidgetController* AMyHUD::GetOverlayWidgetController(const FWidgetCont
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
 		OverlayWidgetController->BindCallbacksToDependencies();
 
-		return OverlayWidgetController;
+		
 	}
 	return OverlayWidgetController;
 }

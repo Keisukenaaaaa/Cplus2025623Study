@@ -24,8 +24,7 @@ class CPLUS2025623STUDY_API AMyHUD : public AHUD
 	GENERATED_BODY()
 public:
 
-	UPROPERTY()
-	TObjectPtr<UMyUserWidget> OverlayWidget;
+
 
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
 	UMyOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
@@ -36,6 +35,9 @@ protected:
 
 	
 private:
+
+	UPROPERTY()
+	TObjectPtr<UMyUserWidget> OverlayWidget;
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMyUserWidget>	OverlayWidgetClass;

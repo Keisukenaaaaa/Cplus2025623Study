@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSet.h"
+#include "GameplayTagContainer.h"
 #include "UI/WidgetController/MyWidgetController.h"
 #include "AttributeMenuWidgetController.generated.h"
 
@@ -20,14 +22,21 @@ class CPLUS2025623STUDY_API UAttributeMenuWidgetController : public UMyWidgetCon
 public:
 
 	virtual void BindCallbacksToDependencies() override;
+
 	virtual void BroadcastInitialValues() override;
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoDelegate;
 
-	protected:
+protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
+
+private:
+
+	void BroadcastAttributeInfo(const FGameplayTag& AttributeTag,const FGameplayAttribute& Attribute) const;
+
+	
 	
 };

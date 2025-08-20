@@ -42,6 +42,7 @@ class CPLUS2025623STUDY_API UMyWidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues();
 	
 	virtual void BindCallbacksToDependencies() ;
