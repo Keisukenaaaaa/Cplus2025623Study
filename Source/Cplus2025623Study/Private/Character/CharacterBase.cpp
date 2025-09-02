@@ -71,4 +71,12 @@ void ACharacterBase::InitAbilityActorInfo()
 {
 }
 
+void ACharacterBase::AddCharacterAbilities()
+{
+	UMyAbilitySystemComponentBase *ASC=Cast<UMyAbilitySystemComponentBase>(GetAbilitySystemComponent());
+	
+	if (!HasAuthority()) return;
+	ASC->AddCharacterAbilities(StartupAbilities);
+}
+
 // Called every frame

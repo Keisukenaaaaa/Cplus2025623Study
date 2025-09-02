@@ -8,6 +8,7 @@ FMyGameplayTags FMyGameplayTags::GameplayTags;
 
 void FMyGameplayTags::InitializeNativeGameplayTags()
 {
+	
 	/*
 	 * Primary Attributes
 	 */
@@ -103,5 +104,46 @@ void FMyGameplayTags::InitializeNativeGameplayTags()
 		FString("Amount of Mana regenerated every 1 second")
 		);
 
+	InitializeInputGameplayTags();
+
 }
+void FMyGameplayTags::InitializeInputGameplayTags()
+{
+	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Attributes.InputTag.LMB"),
+		FString("鼠标左键")
+		);
+	
+	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Attributes.InputTag.RMB"),
+		FString("鼠标右键")
+		);
+	
+	GameplayTags.InputTag_1 = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Attributes.InputTag.1"),
+		FString("键盘1键")
+		);
+	
+	GameplayTags.InputTag_2 = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Attributes.InputTag.2"),
+		FString("键盘2键")
+		);
+	
+	GameplayTags.InputTag_3 = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Attributes.InputTag.3"),
+		FString("键盘3键")
+		);
+	
+	GameplayTags.InputTag_4 = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Attributes.InputTag.4"),
+		FString("键盘4键")
+		);
+}
+
 

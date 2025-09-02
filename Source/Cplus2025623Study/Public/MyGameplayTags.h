@@ -18,6 +18,7 @@ public:
 
 	// 初始化所有原生标签
 	static void InitializeNativeGameplayTags();
+	static void InitializeInputGameplayTags();
 
 	
 	/*
@@ -41,6 +42,17 @@ public:
 	FGameplayTag Attributes_Secondary_CriticalHitResistance;
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
+
+
+	/*
+ * InputTags
+ */
+	FGameplayTag InputTag_LMB; //鼠标左键
+	FGameplayTag InputTag_RMB; //鼠标右键
+	FGameplayTag InputTag_1; //1键
+	FGameplayTag InputTag_2; //2键
+	FGameplayTag InputTag_3; //3键
+	FGameplayTag InputTag_4; //4键
 
 
 private:

@@ -5,6 +5,7 @@
 #include "AbilitySystemInterface.h"
 
 #include "CoreMinimal.h"
+#include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "CharacterBase.generated.h"
@@ -54,5 +55,13 @@ protected:
 	
 	
 	virtual void InitAbilityActorInfo();
+
+	void AddCharacterAbilities();
+	
+
+private:
+	UPROPERTY(EditAnywhere,Category="Attributes")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	
 
 };

@@ -29,6 +29,10 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 
 	InitAbilityActorInfo();
 
+	SetOwner(NewController);
+
+	AddCharacterAbilities();
+
 }
 
 void APlayerCharacter::OnRep_PlayerState()

@@ -25,6 +25,9 @@ class CPLUS2025623STUDY_API UMyAbilitySystemComponentBase : public UAbilitySyste
 
 	FEffectAssetTags EffectAssetTags;
 
+	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+	
+
 	protected:
 	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,const FGameplayEffectSpec& EffectSpec,FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 };
