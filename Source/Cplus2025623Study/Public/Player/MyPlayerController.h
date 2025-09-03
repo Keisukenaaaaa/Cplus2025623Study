@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "GameFramework/PlayerController.h"
 #include "MyPlayerController.generated.h"
 
+class UInputConfig;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -38,4 +41,17 @@ private:
 	void CursorTrace();
 	IEnemyInterface* LastActor;
 	IEnemyInterface* ThisActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputConfig> InputConfig;
+
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHold(FGameplayTag InputTag);
+
+	UPROPERTY()
+	TObjectPtr<UMyAbilitySystemComponentBase> MyAbilitySystemComponentBase;
+
+	UMyAbilitySystemComponentBase* GetASC();
+	
 };
