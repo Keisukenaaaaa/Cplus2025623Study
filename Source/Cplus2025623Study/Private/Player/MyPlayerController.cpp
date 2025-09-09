@@ -5,50 +5,93 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
+#include "MyGameplayTags.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
+#include "Components/SplineComponent.h"
 #include "Input/InputComponentBase.h"
 #include "Interaction/EnemyInterface.h"
 
 
+AMyPlayerController::AMyPlayerController()  	//此处是构造函数,为什么构造函数不用写在最前面?它是在对象创建时调用的?我调整过位置 问题换成为什么不放最前面也能正常运行
+{
+	bReplicates = true;//是否将数据传送服务器更新
+
+	LastActor=nullptr;
+	ThisActor=nullptr;
+	
+	Spline =CreateDefaultSubobject<USplineComponent>("Spline"); //在构造函数中将spline初始化
+}
+
 void AMyPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
+//鼠标位置射线追踪
 	CursorTrace();
+//自动寻路
+	AutoRun();
 }
-void AMyPlayerController::CursorTrace()
+
+void AMyPlayerController::AutoRun()
 {
-	FHitResult CursorHit;
+	if(!bAutoRunning) return;
+	if(APawn* ControlledPawn = GetPawn())
+	{
+		//找到距离样条最近的位置
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		//获取这个位置在样条上的方向
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(Direction);
+
+		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+		if(DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRunning = false;
+		}
+	}
+
+}
+void AMyPlayerController::CursorTrace()//鼠标位置追踪代码
+{
+
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
-	if (!CursorHit.bBlockingHit)return;
+	if (!CursorHit.bBlockingHit)return;//如果为命中返回结果
 
 	LastActor = ThisActor;
 	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
 
-	if (LastActor == nullptr) 
+	if (ThisActor!=LastActor)
 	{
-		if (ThisActor != nullptr)
-		{
-			ThisActor ->HighlightActor();
-		}
-		else {};
+		//这段怎么折叠起来的
+		if (ThisActor)ThisActor->HighlightActor();
+		if (LastActor)LastActor->UnHighlightActor();
 	}
-	else
-	{
-		if (ThisActor == nullptr)
-		{
-			LastActor->UnHighlightActor();
-		}
-		else {
-			if (LastActor != ThisActor)
-			{
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			}
-			else {}
-
-		}
-	}
+	//老的判定追踪代码
+	// if (LastActor == nullptr) 
+	// {
+	// 	if (ThisActor != nullptr)
+	// 	{
+	// 		ThisActor ->HighlightActor();
+	// 	}
+	// 	else {};
+	// }
+	// else
+	// {
+	// 	if (ThisActor == nullptr)
+	// 	{
+	// 		LastActor->UnHighlightActor();
+	// 	}
+	// 	else {
+	// 		if (LastActor != ThisActor)
+	// 		{
+	// 			LastActor->UnHighlightActor();
+	// 			ThisActor->HighlightActor();
+	// 		}
+	// 		else {}
+	//
+	// 	}
+	// }
 }
 
 // void AMyPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)//该整段代码是不是完全可以在蓝图中实现?包括按钮的响应三种方式?本质不就是将按钮和三个逻辑绑定?
@@ -67,19 +110,87 @@ void AMyPlayerController::CursorTrace()
 // }
 void AMyPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	// GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+	if (InputTag.MatchesTagExact(FMyGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting=ThisActor != nullptr;//ThisActor为鼠标悬停在敌人身上才会有值
+		bAutoRunning = false;
+		FollowTime=0.f;//重置统计时间
+	}
 }
 
 void AMyPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if(GetASC() == nullptr) return;
-	GetASC()->AbilityInputTagReleased(InputTag);
+	if(!InputTag.MatchesTagExact(FMyGameplayTags::Get().InputTag_LMB))
+	{
+		if(GetASC())
+		{
+			GetASC()->AbilityInputTagHold(InputTag);
+		}
+		return;
+	}
+	
+	if (bTargeting)//这一段判定是什么意思
+	{
+		if(GetASC())
+		{
+			GetASC()->AbilityInputTagHold(InputTag);
+		}
+	}
+	
+	else
+	{
+		const APawn* ControlledPawn=GetPawn();
+
+		if (FollowTime<=ShortPressThreshold && ControlledPawn)
+		{
+			if (UNavigationPath* NavPath=UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(), CachedDestination))
+			{
+				Spline->ClearSplinePoints();//清除现有样条内的点;
+				for (const FVector& PointLoc:NavPath->PathPoints)
+				{
+					Spline->AddSplinePoint(PointLoc,ESplineCoordinateSpace::World);//将新的位置添加到Spline中
+					DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Orange, false, 5.f); //点击后debug调试
+				}
+				//自动寻路到达目的后停止移动
+				CachedDestination=NavPath->PathPoints[NavPath->PathPoints.Num()-1];
+				bAutoRunning = true;//设置当前正常自动寻路状态 将在tick中更新位置
+			}
+		}
+		//FollowTime=0.f;
+		//bTargeting=false;//为何此处叠起来了又
+	}
 }
 
 void AMyPlayerController::AbilityInputTagHold(FGameplayTag InputTag)
 {
-	if(GetASC() == nullptr) return;
-	GetASC()->AbilityInputTagHold(InputTag);
+		if(!InputTag.MatchesTagExact(FMyGameplayTags::Get().InputTag_LMB))
+		{
+			if(GetASC())
+			{
+				GetASC()->AbilityInputTagHold(InputTag);
+			}
+			return;
+		}
+
+		if(bTargeting)
+		{
+			if(GetASC())
+			{
+				//点击敌人目标，将攻击敌人
+				GetASC()->AbilityInputTagHold(InputTag);
+			}
+		}
+		else
+		{
+			FollowTime+=GetWorld()->GetDeltaSeconds(); // 统计悬停时间来判断是否为点击
+			if (CursorHit.bBlockingHit){CachedDestination=CursorHit.ImpactPoint;}//获取鼠标拾取位置
+			if (APawn*ControlledPawn=GetPawn())
+			{
+				const FVector WorldDirection = (CachedDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
+				ControlledPawn->AddMovementInput(WorldDirection);
+			}
+		}
+	
 }
 
 
@@ -93,16 +204,12 @@ UMyAbilitySystemComponentBase* AMyPlayerController::GetASC()
 	return MyAbilitySystemComponentBase;
 }
 
-AMyPlayerController::AMyPlayerController()
-{
-	bReplicates = true;//是否将数据传送服务器更新
-}
+
 
 void AMyPlayerController::BeginPlay()
 {
 
 	Super::BeginPlay();
-
 	check(AuraContext);
 
 	//从本地角色身上获取到它的子系统
@@ -120,9 +227,6 @@ void AMyPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);//将鼠标锁定在视口内
 	InputModeData.SetHideCursorDuringCapture(false);//鼠标被捕获时是否隐藏
 	SetInputMode(InputModeData);
-
-
-
 }
 
 void AMyPlayerController::SetupInputComponent()
@@ -151,5 +255,7 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
 }
+
+
 
 

@@ -8,7 +8,7 @@
 
 void UMyAbilitySystemComponentBase::AbilityActorInfoSet()
 {
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UMyAbilitySystemComponentBase::EffectApplied);
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UMyAbilitySystemComponentBase::ClientEffectApplied);
 
 	// const FMyGameplayTags& GameplayTags = FMyGameplayTags::Get();
 	// GEngine->AddOnScreenDebugMessage
@@ -69,6 +69,14 @@ void UMyAbilitySystemComponentBase::AbilityInputTagReleased(const FGameplayTag& 
 		}
 	
 	}
+}
+
+void UMyAbilitySystemComponentBase::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
+	const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle) const
+{
+	FGameplayTagContainer TagContainer;
+	EffectSpec.GetAllAssetTags(TagContainer);
+	EffectAssetTags.Broadcast(TagContainer);
 }
 
 void UMyAbilitySystemComponentBase::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,

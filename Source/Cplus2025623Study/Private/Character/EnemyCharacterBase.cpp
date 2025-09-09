@@ -11,7 +11,7 @@
 AEnemyCharacterBase::AEnemyCharacterBase()
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-
+	
 	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponentBase>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true); //设置组件用于在网络上复制
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
