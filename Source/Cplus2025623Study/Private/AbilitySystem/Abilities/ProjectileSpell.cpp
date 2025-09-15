@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
+//新增的火球朝向问题
 #include "AbilitySystem/Abilities/ProjectileSpell.h"
 
 #include "Actor/Projectile.h"
@@ -35,17 +34,23 @@ void UProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 }
 
-void UProjectileSpell::SpawnProjectile()
+void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority(); //判断此函数是否在服务器运行
 	if (!bIsServer) return;
 
 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
+		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
+		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation(); //将方向转为旋转
+		Rotation.Pitch = 0.f; //设置Pitch为0，转向的朝向将平行于地面
+
+		
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(CombatInterface->GetCombatSocketLocation());
-		SpawnTransform.SetRotation(GetAvatarActorFromActorInfo()->GetActorQuat());
-		
+		SpawnTransform.SetRotation(Rotation.Quaternion());
+
+	
 		//SpawnActorDeferred将异步创建实例，在实例创建完成时，相应的数据已经应用到了实例身上
 		AProjectile* Projectile = GetWorld()->SpawnActorDeferred<AProjectile>(
 			ProjectileClass,

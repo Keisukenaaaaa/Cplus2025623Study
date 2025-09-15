@@ -129,7 +129,7 @@ void AMyPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 	
-	if (bTargeting)//这一段判定是什么意思
+	if (bTargeting||bShiftKeyDown)//这一段判定是什么意思
 	{
 		if(GetASC())
 		{
@@ -172,7 +172,7 @@ void AMyPlayerController::AbilityInputTagHold(FGameplayTag InputTag)
 			return;
 		}
 
-		if(bTargeting)
+		if(bTargeting||bShiftKeyDown)
 		{
 			if(GetASC())
 			{
@@ -236,6 +236,10 @@ void AMyPlayerController::SetupInputComponent()
 	UInputComponentBase* EnhancedInputComponent = CastChecked<UInputComponentBase>(InputComponent);//此处为什么从EnhancedInputComponent切换到UInputComponentBase?这里面不是没有移动的逻辑吗 基本没事了= =他继承自EnhancedInputComponent
 
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
+
+	//绑定Shift按键事件
+	EnhancedInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &ThisClass::ShiftPressed);
+	EnhancedInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &ThisClass::ShiftReleased);
 
 	EnhancedInputComponent->BindAbilityAction(InputConfig,this,&ThisClass::AbilityInputTagPressed,&ThisClass::AbilityInputTagReleased,&ThisClass::AbilityInputTagHold);
 }

@@ -21,6 +21,7 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
+	
 }
 
 void APlayerCharacter::PossessedBy(AController* NewController)

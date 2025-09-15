@@ -5,6 +5,7 @@
 
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -15,6 +16,11 @@ ACharacterBase::ACharacterBase()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//创建控件
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));//添加到父节点
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);//关闭骨骼网格体碰撞
+
+	//设置角色不会和相机碰撞
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
 }
 
 UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
