@@ -2,9 +2,12 @@
 //新增的火球朝向问题
 #include "AbilitySystem/Abilities/ProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+
 #include "Actor/Projectile.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/KismetSystemLibrary.h"
+
 
 void UProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -26,7 +29,7 @@ void UProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	// 		Cast<APawn>(GetOwningActorFromActorInfo()),
 	// 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	//
-	// 	//TODO:给 Projectile添加一个GE 去实现伤害
+	// TODO:给 Projectile添加一个GE 去实现伤害
 	//
 	// 	//确保变换设置被正确应用
 	// 	Projectile->FinishSpawning(SpawnTransform);
@@ -60,9 +63,15 @@ void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		//TODO:给 Projectile添加一个GE 去实现伤害
+		//创建一个GE的实例，并设置给投射物
+		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		Projectile->DamageEffectHandle = SpecHandle;
 
 		//确保变换设置被正确应用
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 
 }
+
+

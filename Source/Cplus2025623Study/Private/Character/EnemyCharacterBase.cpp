@@ -52,4 +52,7 @@ void AEnemyCharacterBase::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UMyAbilitySystemComponentBase>(AbilitySystemComponent)->AbilityActorInfoSet();
+
+	//通过GE初始角色的属性
+	InitializeDefaultAttributes();
 }

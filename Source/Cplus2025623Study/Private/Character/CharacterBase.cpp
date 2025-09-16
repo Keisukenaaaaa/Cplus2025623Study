@@ -6,6 +6,7 @@
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
 #include "Components/CapsuleComponent.h"
+#include "Cplus2025623Study/Cplus2025623Study.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -19,6 +20,9 @@ ACharacterBase::ACharacterBase()
 
 	//设置角色不会和相机碰撞
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PROJECTILE, ECR_Overlap); //设置碰撞体可以和发射物产生重叠
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true); //设置碰撞体可以生成重叠事件
+	
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 }
