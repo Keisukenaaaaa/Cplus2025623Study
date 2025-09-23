@@ -5,7 +5,8 @@
 #include <Cplus2025623Study/Cplus2025623Study.h>
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
-
+#include "Components/WidgetComponent.h"
+#include "UI/Widget/MyUserWidget.h"
 
 
 AEnemyCharacterBase::AEnemyCharacterBase()
@@ -18,6 +19,8 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 
 	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>("AttributeSet");
 
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent()); //将血条附件到根节点上
 }
 
 void AEnemyCharacterBase::HighlightActor()
@@ -41,10 +44,37 @@ int32 AEnemyCharacterBase::GetPlayerLevel()
 	return Level;
 }
 
-void AEnemyCharacterBase::BeginPlay()
+/////带研读线
+void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点研读
 {
 	Super::BeginPlay();
 	InitAbilityActorInfo();
+	
+	if(UMyUserWidget* UserWidget = Cast<UMyUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		UserWidget->SetWidgetController(this);
+	}
+	if(const UMyAttributeSet* AS = Cast<UMyAttributeSet>(AttributeSet))
+	{
+		//监听血量变化
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		//初始化血量
+		OnHealthChanged.Broadcast(AS->GetHealth());
+		OnMaxHealthChanged.Broadcast(AS->GetMaxHealth());
+	}
+
 	
 }
 
