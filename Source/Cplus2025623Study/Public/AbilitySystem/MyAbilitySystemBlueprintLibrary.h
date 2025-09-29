@@ -26,5 +26,10 @@ public:
 	UFUNCTION(BlueprintPure,Category="MyAbilitySystemLibrary|WidgetController")
 	static UAttributeMenuWidgetController* GetUAttributeMenuWidgetController(const UObject* WorldContextObject);
 
+	//初始化角色的属性
+	UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
+
+
 	
 };

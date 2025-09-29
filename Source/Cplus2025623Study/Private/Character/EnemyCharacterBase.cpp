@@ -3,6 +3,8 @@
 
 #include "Character/EnemyCharacterBase.h"
 #include <Cplus2025623Study/Cplus2025623Study.h>
+
+#include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
 #include "Components/WidgetComponent.h"
@@ -85,4 +87,12 @@ void AEnemyCharacterBase::InitAbilityActorInfo()
 
 	//通过GE初始角色的属性
 	InitializeDefaultAttributes();
+
+	//打印生命值查看属性
+	UE_LOG(LogTemp, Warning, TEXT("%s 的生命值为 %f"), *this->GetName(), Cast<UMyAttributeSet>(AttributeSet)->GetHealth())
+}
+
+void AEnemyCharacterBase::InitializeDefaultAttributes() const
+{
+	UMyAbilitySystemBlueprintLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 }
