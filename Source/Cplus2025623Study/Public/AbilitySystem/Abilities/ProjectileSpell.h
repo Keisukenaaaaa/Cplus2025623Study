@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyGameplayTags.h"
 #include "AbilitySystem/Abilities/MyGameplayAbility.h"
 //#include "Actor/Projectile.h"
 #include "ProjectileSpell.generated.h"
+
 
 class AProjectile;
 /**

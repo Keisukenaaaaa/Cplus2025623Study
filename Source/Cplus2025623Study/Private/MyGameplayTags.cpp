@@ -144,6 +144,12 @@ void FMyGameplayTags::InitializeInputGameplayTags()
 		FName("Attributes.InputTag.4"),
 		FString("键盘4键")
 		);
+	
+	GameplayTags.Damage = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Damage"),
+		FString("Damage")
+		);
 }
 
 

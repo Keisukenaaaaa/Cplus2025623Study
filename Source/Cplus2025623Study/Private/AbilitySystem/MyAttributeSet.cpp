@@ -68,17 +68,33 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	FEffectProperties Props;
 	SetEffectProperties(Data,Props);Super::PostGameplayEffectExecute(Data);
 
+	
+
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(  FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 		UE_LOG(LogTemp, Warning, TEXT("%s 的生命值发生了修改，当前生命值：%f"), *Props.TargetAvatarActor->GetName(), GetHealth());//测试用
 	}
-	
+
 	if(Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana ( FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 	}
-	
+	//自己写代码的时候把这个提前了然后把生命赋予注释了,导致完全没有初始生命
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		const float LocalInComingDamage=GetIncomingDamage();
+		
+		SetIncomingDamage(0.f);
+		
+		if (LocalInComingDamage>0.f)
+		{
+			const float NewHealth=GetHealth()-LocalInComingDamage;
+			SetHealth(  FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			const bool bFatal= NewHealth <=0.f;//如果血量小于0 角色将会死亡
+		}
+	}
 }
 
 

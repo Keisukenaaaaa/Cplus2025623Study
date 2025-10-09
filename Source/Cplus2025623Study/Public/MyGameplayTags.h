@@ -43,6 +43,10 @@ public:
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
 
+	/*
+	 * Meta Attributes
+	 */
+	FGameplayTag Damage;//伤害 标签
 
 	/*
  * InputTags

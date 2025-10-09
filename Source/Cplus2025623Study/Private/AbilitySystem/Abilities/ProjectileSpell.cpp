@@ -66,6 +66,16 @@ void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 		//创建一个GE的实例，并设置给投射物
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+
+		FMyGameplayTags GameplayTags=FMyGameplayTags::Get();//获取标签单例
+		// const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel()); //根据等级获取技能伤害
+		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel() + 19);
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("火球术伤害：%f"), ScaledDamage));
+
+		
+		//UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude() //使用DataName设置 两种方式都行
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
+	
 		Projectile->DamageEffectHandle = SpecHandle;
 
 		//确保变换设置被正确应用
