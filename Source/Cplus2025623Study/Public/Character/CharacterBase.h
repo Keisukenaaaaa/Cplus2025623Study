@@ -62,6 +62,12 @@ protected:
 	virtual void InitAbilityActorInfo();
 
 	void AddCharacterAbilities();
+
+	//重写战斗接口中的 受击函数 ;疑问这整篇代码中哪里将战斗接口赋予到角色积累的,忘记了;是上面那个public声明就可以做到了吗
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TObjectPtr<UAnimMontage>HitReactMontage; 
 	
 
 private:

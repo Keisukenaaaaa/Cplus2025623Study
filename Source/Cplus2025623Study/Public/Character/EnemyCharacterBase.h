@@ -42,6 +42,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Class Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	bool bHitReacting = false; //当前是否处于被攻击状态
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	float BaseWalkSpeed = 250.f; //当前角色的最大移动速度
+
+
+	void HitReactTagChanged(const FGameplayTag CallbackTag,int32 NewCount);//为什么此处是委托函数??
+
 	
 protected:
 	virtual void BeginPlay() override;

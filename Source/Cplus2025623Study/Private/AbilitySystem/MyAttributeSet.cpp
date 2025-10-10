@@ -93,8 +93,19 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			SetHealth(  FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
 			const bool bFatal= NewHealth <=0.f;//如果血量小于0 角色将会死亡
+
+			//测试Tag--hitReact所用 完全不懂
+			if(!bFatal)
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
+			}
 		}
 	}
+//测试Tag--hitReact所用 完全不懂
+
+
 }
 
 

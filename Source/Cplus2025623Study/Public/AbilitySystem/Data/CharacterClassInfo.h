@@ -43,4 +43,9 @@ public:
 	//通过枚举获取对应的初始化类
 	FCharacterClassDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);
 
+
+	//在CharacterClassInfo.h里增加一个参数，用于设置创建敌人时所拥有的初始技能
+	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
+
 };

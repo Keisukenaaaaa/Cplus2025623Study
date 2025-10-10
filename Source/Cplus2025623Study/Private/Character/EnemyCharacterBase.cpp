@@ -4,10 +4,12 @@
 #include "Character/EnemyCharacterBase.h"
 #include <Cplus2025623Study/Cplus2025623Study.h>
 
+#include "MyGameplayTags.h"
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/MyUserWidget.h"
 
 
@@ -46,11 +48,25 @@ int32 AEnemyCharacterBase::GetPlayerLevel()
 	return Level;
 }
 
+void AEnemyCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)//如果数量大于0,择期移动速度为0
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+}
+
 /////带研读线
 void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点研读
 {
 	Super::BeginPlay();
+
+	//设置角色的初始移动速度
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+
+	//初始化角色ASC
 	InitAbilityActorInfo();
+
+	//初始化角色的技能
+	UMyAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 	
 	if(UMyUserWidget* UserWidget = Cast<UMyUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -72,6 +88,10 @@ void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点�
 			}
 		);
 
+		//在AEnemyBase::BeginPlay()中，我们设置对监听函数的回调
+		AbilitySystemComponent->RegisterGameplayTagEvent(FMyGameplayTags::Get().Effects_HitReact,EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&ThisClass::HitReactTagChanged);
 		//初始化血量
 		OnHealthChanged.Broadcast(AS->GetHealth());
 		OnMaxHealthChanged.Broadcast(AS->GetMaxHealth());

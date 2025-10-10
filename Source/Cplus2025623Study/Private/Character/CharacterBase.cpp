@@ -91,8 +91,13 @@ void ACharacterBase::AddCharacterAbilities()
 {
 	UMyAbilitySystemComponentBase *ASC=Cast<UMyAbilitySystemComponentBase>(GetAbilitySystemComponent());
 	
-	if (!HasAuthority()) return;
+	if (!HasAuthority()) return;//查询是否拥有网络权限,应用技能需要添加给服务器
 	ASC->AddCharacterAbilities(StartupAbilities);
+}
+
+UAnimMontage* ACharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
 }
 
 // Called every frame

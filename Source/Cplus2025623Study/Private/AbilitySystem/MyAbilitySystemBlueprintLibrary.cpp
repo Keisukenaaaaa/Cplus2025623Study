@@ -77,3 +77,24 @@ void UMyAbilitySystemBlueprintLibrary::InitializeDefaultAttributes(const UObject
 
 
 }
+//下面这一坨是啥 需要详细解释
+void UMyAbilitySystemBlueprintLibrary::GiveStartupAbilities(const UObject* WorldContextObject,
+	UAbilitySystemComponent* ASC)
+{
+	//获取到当前关卡的GameMode实例
+	const AMyGameModeBase* GameMode = Cast<AMyGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(GameMode == nullptr) return;
+
+	const AActor* AvatarActor = ASC->GetAvatarActor();
+
+	//从实例获取到关卡角色的配置
+	UCharacterClassInfo* CharacterClassInfo = GameMode->CharacterClassInfo;
+
+	//遍历角色拥有的技能数组
+	for(const TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->CommonAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1); //创建技能实例
+		ASC->GiveAbility(AbilitySpec); //只应用不激活
+	}
+
+}

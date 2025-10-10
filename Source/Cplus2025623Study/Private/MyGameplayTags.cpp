@@ -150,6 +150,13 @@ void FMyGameplayTags::InitializeInputGameplayTags()
 		FName("Damage"),
 		FString("Damage")
 		);
+
+	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get()
+	.AddNativeGameplayTag(
+		FName("Effects.HitReact"),
+		FString("When owner hit,give this tag")
+	);
+	
 }
 
 
