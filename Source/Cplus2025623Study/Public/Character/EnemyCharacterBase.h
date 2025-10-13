@@ -51,6 +51,12 @@ public:
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag,int32 NewCount);//为什么此处是委托函数??
 
+	//10.13 角色死亡
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	float LifeSpan=5.f;//设置死亡后的存在时间
+
+	virtual void Die() override;
+
 	
 protected:
 	virtual void BeginPlay() override;

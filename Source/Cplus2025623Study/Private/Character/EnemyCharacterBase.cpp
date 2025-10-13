@@ -54,6 +54,12 @@ void AEnemyCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
+void AEnemyCharacterBase::Die()
+{
+	SetLifeSpan(LifeSpan);
+	Super::Die();//为什么此处需要super?是继承父级的原本的Die吗?
+}
+
 /////带研读线
 void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点研读
 {

@@ -67,9 +67,26 @@ protected:
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
-	TObjectPtr<UAnimMontage>HitReactMontage; 
-	
+	TObjectPtr<UAnimMontage>HitReactMontage;
 
+	//角色死亡相关 25/10/13
+	virtual void Die () override;
+
+	UFUNCTION(NetMulticast,Reliable)
+	virtual void MulticastHandleDeath();
+
+	//分别设置角色和武器的溶解材质
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+	void Dissolve();//溶解效果
+
+	//弄了一个在蓝图里实现的函数,因为比较方便;同时不知道到底会 需要设置多少个材料,所以传递的内容为数组
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeline(const TArray<UMaterialInstanceDynamic*>& DynamicMaterialInstance);
 private:
 	UPROPERTY(EditAnywhere,Category="Attributes")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;

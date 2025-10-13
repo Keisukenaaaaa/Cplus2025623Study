@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "GameFramework/PlayerController.h"
+#include "UI/Widget/DamageTextComponent.h"
 #include "MyPlayerController.generated.h"
 
 class USplineComponent;
@@ -27,6 +28,14 @@ class CPLUS2025623STUDY_API AMyPlayerController : public APlayerController
 public:
 	AMyPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter); //在每个客户端显示伤害数值
+
+	//创建一个用于设置显示伤害数值的组件类，后续可以使用它去实例化多个实例，显示多个伤害数值
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
 	
 protected:
 	virtual void BeginPlay() override;//游戏开始时触发

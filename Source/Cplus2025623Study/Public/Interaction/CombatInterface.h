@@ -19,6 +19,7 @@ class UCombatInterface : public UInterface
 class CPLUS2025623STUDY_API ICombatInterface
 {
 	GENERATED_BODY()
+	//疑问 接口中是不是所有函数都要写成public 如果写成private有什么意义
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
@@ -30,4 +31,6 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();//获取受击蒙太奇动画
+
+	virtual void Die()=0;//=0的虚函数意义
 };

@@ -10,8 +10,10 @@
 #include "NavigationSystem.h"
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/Character.h"
 #include "Input/InputComponentBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 
 AMyPlayerController::AMyPlayerController()  	//此处是构造函数,为什么构造函数不用写在最前面?它是在对象创建时调用的?我调整过位置 问题换成为什么不放最前面也能正常运行
@@ -31,6 +33,25 @@ void AMyPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 //自动寻路
 	AutoRun();
+}
+
+void AMyPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+{
+	//首先对参数进行判断，以及对类判断，这里确保执行逻辑时，目标角色还没有被销毁,但为什么是目标角色?如果目标角色被销毁了就不能显示了吗?
+	if(IsValid(TargetCharacter) && DamageTextComponentClass)
+	{
+		//然后在内部实例化组件，并注册，在实例化时，第一个参数相当于作为此组件的父类，当PlayerController被销毁时，它也会被销毁。
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent(); //动态创建的组件需要调用注册
+		
+		//在获取到位置后，然后将其和角色分离，防止角色移动，伤害数字也跟随移动。
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform); //先附加到角色身上，使用角色位置
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform); //然后从角色身上分离，保证在一个位置播放完成动画
+		DamageText->SetDamageText(DamageAmount); //设置显示的伤害数字
+		
+		
+		
+	}
 }
 
 void AMyPlayerController::AutoRun()

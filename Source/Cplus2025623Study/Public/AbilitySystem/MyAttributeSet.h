@@ -204,6 +204,8 @@ public:
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
+	static void ShowFloatingText(const FEffectProperties& Props, const float Damage);
+
 	
 	
 private:

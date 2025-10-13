@@ -6,7 +6,10 @@
 #include "GameplayEffectExtension.h"
 #include "MyGameplayTags.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include"Net/UnrealNetwork.h"
+#include "Player/MyPlayerController.h"
 
 void UMyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -63,7 +66,8 @@ void UMyAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 }
 
 void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{Super::PostGameplayEffectExecute(Data);
+{
+	Super::PostGameplayEffectExecute(Data);
 
 	FEffectProperties Props;
 	SetEffectProperties(Data,Props);Super::PostGameplayEffectExecute(Data);
@@ -95,15 +99,35 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			const bool bFatal= NewHealth <=0.f;//如果血量小于0 角色将会死亡
 
 			//测试Tag--hitReact所用 完全不懂
-			if(!bFatal)
+			// if(!bFatal)
+			// {
+			// 	FGameplayTagContainer TagContainer;
+			// 	TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
+			// 	Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
+			// }
+			if (bFatal)
 			{
+				//调用死亡函数
+				ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
+				
+			}
+			//如果没死 激活受击技能
+			else
+			{
+				//原来这就是激活受击技能的代码
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
 			}
+
+			ShowFloatingText(Props,LocalInComingDamage);
+			//这些个Props是什么 前面是定义了,但是是哪来的有什么用
 		}
 	}
-//测试Tag--hitReact所用 完全不懂
 
 
 }
@@ -239,4 +263,17 @@ void UMyAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& Old
 void UMyAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, ManaRegeneration, OldManaRegeneration);
+}
+
+void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage)
+{
+	//调用显示伤害数字
+	if(Props.SourceCharacter != Props.TargetCharacter)
+	{
+		//然后获取到目标的PlayerController，调用函数即可
+		if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		{
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter); //调用显示伤害数字
+		}
+	}
 }
