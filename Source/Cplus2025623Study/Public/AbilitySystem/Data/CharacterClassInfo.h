@@ -39,6 +39,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
+	//设置曲线表格的配置项
+	UPROPERTY(EditDefaultsOnly, Category="Common Class Defaults|Damgage")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
+
 
 	//通过枚举获取对应的初始化类
 	FCharacterClassDefaultInfo GetClassDefaultInfo(ECharacterClass CharacterClass);

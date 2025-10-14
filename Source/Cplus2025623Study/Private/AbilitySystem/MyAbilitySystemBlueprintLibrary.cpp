@@ -98,3 +98,14 @@ void UMyAbilitySystemBlueprintLibrary::GiveStartupAbilities(const UObject* World
 	}
 
 }
+
+UCharacterClassInfo* UMyAbilitySystemBlueprintLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	//获取到当前关卡的GameMode实例
+	const AMyGameModeBase* GameMode = Cast<AMyGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if(GameMode == nullptr) return nullptr;
+
+	//返回关卡的角色的配置
+	return  GameMode->CharacterClassInfo;
+
+}

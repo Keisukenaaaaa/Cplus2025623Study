@@ -128,10 +128,19 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			//这些个Props是什么 前面是定义了,但是是哪来的有什么用
 		}
 	}
-
-
 }
-
+void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage)
+{
+	//调用显示伤害数字
+	if(Props.SourceCharacter != Props.TargetCharacter)
+	{
+		//然后获取到目标的PlayerController，调用函数即可
+		if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		{
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter); //调用显示伤害数字
+		}
+	}
+}
 
 
 
@@ -265,15 +274,4 @@ void UMyAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldMa
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, ManaRegeneration, OldManaRegeneration);
 }
 
-void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage)
-{
-	//调用显示伤害数字
-	if(Props.SourceCharacter != Props.TargetCharacter)
-	{
-		//然后获取到目标的PlayerController，调用函数即可
-		if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
-		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter); //调用显示伤害数字
-		}
-	}
-}
+
