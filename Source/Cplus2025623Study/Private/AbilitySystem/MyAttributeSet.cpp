@@ -61,8 +61,6 @@ void UMyAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& 
 		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
-
-	
 }
 
 void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -70,10 +68,8 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	Super::PostGameplayEffectExecute(Data);
 
 	FEffectProperties Props;
-	SetEffectProperties(Data,Props);Super::PostGameplayEffectExecute(Data);
-
+	SetEffectProperties(Data,Props);
 	
-
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(  FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
@@ -95,9 +91,7 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		{
 			const float NewHealth=GetHealth()-LocalInComingDamage;
 			SetHealth(  FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
 			const bool bFatal= NewHealth <=0.f;//如果血量小于0 角色将会死亡
-
 			//测试Tag--hitReact所用 完全不懂
 			// if(!bFatal)
 			// {
@@ -113,7 +107,6 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 				{
 					CombatInterface->Die();
 				}
-				
 			}
 			//如果没死 激活受击技能
 			else
@@ -123,7 +116,6 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 				TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
 			}
-
 			ShowFloatingText(Props,LocalInComingDamage);
 			//这些个Props是什么 前面是定义了,但是是哪来的有什么用
 		}

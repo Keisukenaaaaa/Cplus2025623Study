@@ -65,13 +65,28 @@ void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 		//TODO:给 Projectile添加一个GE 去实现伤害
 		//创建一个GE的实例，并设置给投射物
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		//10.16开始学GAS底层了讲了一堆听不懂的,到时候问下GPT
+		FGameplayEffectContextHandle EffectContextHandle=SourceASC->MakeEffectContext();
+		EffectContextHandle.SetAbility(this);//设置技能
+		EffectContextHandle.AddSourceObject(Projectile); //设置GE的源
+		//添加Actor列表 这个列表中的Actor怎么加的? 不是先加明中结果吗?还是这个是全地图所有的敌人表
+		TArray<TWeakObjectPtr<AActor>> Actors;
+		Actors.Add(Projectile);
+		EffectContextHandle.AddActors(Actors);
+		//添加命中结果
+		FHitResult HitResult;
+		HitResult.Location = ProjectileTargetLocation;
+		EffectContextHandle.AddHitResult(HitResult);
+		//添加技能触发位置
+		EffectContextHandle.AddOrigin(ProjectileTargetLocation);
+		//10.16 第一段
+		
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
 
 		FMyGameplayTags GameplayTags=FMyGameplayTags::Get();//获取标签单例
 		// const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel()); //根据等级获取技能伤害
 		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel() + 19);
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("火球术伤害：%f"), ScaledDamage));
-
 		
 		//UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude() //使用DataName设置 两种方式都行
 		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
