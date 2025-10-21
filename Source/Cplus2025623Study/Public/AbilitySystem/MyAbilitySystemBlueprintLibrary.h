@@ -38,6 +38,31 @@ public:
 	UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
+	//获取当前GE是否触发格挡
+	UFUNCTION(BlueprintPure, Category="MyAbilitySystemLibrary|GameplayEffects")
+	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	//获取当前GE是否触发暴击
+	UFUNCTION(BlueprintPure, Category="MyAbilitySystemLibrary|GameplayEffects")
+	static bool IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	//我们还要在函数库实现设置的两个函数，这里有个问题，就是没办法传入常量（前面加const）会出现问题，我们将函数编写完成以后编译在UE里面查看
+	//设置需要传入两个值，一个是修改的Context的Handle，另一个则是bool值，用于设置的值，我们无法设置成静态函数，也就是
+	// UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|GameplayEffects")
+	// static void SetIsBlockHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit);
+	//
+	// UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|GameplayEffects")
+	// static void SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
+
+	//声明函数时，我们在前面添加UPARAM(ref)，即可实现在蓝图节点的左侧
+	UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|GameplayEffects")
+	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit);
+
+	UFUNCTION(BlueprintCallable, Category="MyAbilitySystemLibrary|GameplayEffects")
+	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
+
+
+
 	
 
 

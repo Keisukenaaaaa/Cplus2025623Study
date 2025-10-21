@@ -204,7 +204,9 @@ public:
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
-	static void ShowFloatingText(const FEffectProperties& Props, const float Damage);
+	// static void ShowFloatingText(const FEffectProperties& Props, const float Damage);
+	//显示伤害数字
+	static void ShowFloatingText(const FEffectProperties& Props, const float Damage, bool IsBlockedHit, bool IsCriticalHit);
 
 	
 	

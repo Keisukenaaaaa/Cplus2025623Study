@@ -30,7 +30,7 @@ public:
 	virtual void PlayerTick(float DeltaTime) override;
 
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter); //在每个客户端显示伤害数值
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool IsBlockedHit, bool IsCriticalHit); //在每个客户端显示伤害数值
 
 	//创建一个用于设置显示伤害数值的组件类，后续可以使用它去实例化多个实例，显示多个伤害数值
 	UPROPERTY(EditDefaultsOnly)

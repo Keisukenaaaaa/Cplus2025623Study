@@ -5,6 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "MyGameplayTags.h"
+#include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -116,12 +117,17 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 				TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
 			}
-			ShowFloatingText(Props,LocalInComingDamage);
+
+			//获取格挡和暴击
+			const bool IsBlockedHit = UMyAbilitySystemBlueprintLibrary::IsBlockedHit(Props.EffectContextHandle);
+			const bool IsCriticalHit = UMyAbilitySystemBlueprintLibrary::IsCriticalHit(Props.EffectContextHandle);
+		
+			ShowFloatingText(Props,LocalInComingDamage,IsBlockedHit,IsCriticalHit);
 			//这些个Props是什么 前面是定义了,但是是哪来的有什么用
 		}
 	}
 }
-void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage)
+void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const float Damage, bool IsBlockedHit, bool IsCriticalHit)
 {
 	//调用显示伤害数字
 	if(Props.SourceCharacter != Props.TargetCharacter)
@@ -129,7 +135,7 @@ void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const flo
 		//然后获取到目标的PlayerController，调用函数即可
 		if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter); //调用显示伤害数字
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter,IsBlockedHit,IsCriticalHit); //调用显示伤害数字
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "MyGameplayTags.h"
+#include "RPGAbilityTypes.h"
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 #include "Game/MyGameModeBase.h"
 #include "Interaction/CombatInterface.h"
@@ -106,6 +107,22 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	
 	//处理格挡触发
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
+
+	//获取GE的上下文句柄
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	//设置格挡
+	UMyAbilitySystemBlueprintLibrary::SetIsBlockHit(EffectContextHandle, bBlocked);
+
+	//切换集成到蓝图库里了
+	// //我们通过Spec的函数GetContext获取句柄，并通过句柄的Get获取到Context
+	// FGameplayEffectContext* EffectContext = Spec.GetContext().Get();
+	//
+	// //将FGameplayEffectContext转换成我们创建的自定义类型，然后在转换这里一定要用static_cast，不然会报错。	static_cast是强制类型转换操作符
+	// FRPGGameplayEffectContext* RPGEffectContext = static_cast<FRPGGameplayEffectContext*>(EffectContext);
+	//
+	// //获取到自定义类型的context的上下文后，我们可以通过调用函数设置格挡
+	// RPGEffectContext->SetIsBlockedHit(bBlocked);
+	
 	if(bBlocked) Damage *= 0.5f;
 
 
@@ -152,6 +169,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	//计算当前是否暴击
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
 	const bool bCriticalHit = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
+
+	//设置暴击
+	UMyAbilitySystemBlueprintLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
 	
 	//触发暴击 伤害乘以暴击伤害率
 	if(bCriticalHit) Damage = Damage * 2.f + SourceCriticalHitDamage;

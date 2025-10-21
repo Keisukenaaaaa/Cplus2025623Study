@@ -39,7 +39,7 @@ bool FRPGGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 7;
 		}
-		if(BIsCriticalHit)
+		if(bIsCriticalHit)
 		{
 			RepBits |= 1 << 8;
 		}
@@ -95,7 +95,7 @@ bool FRPGGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	}
 	if (RepBits & (1 << 8))
 	{
-		Ar << BIsCriticalHit;
+		Ar << bIsCriticalHit;
 	}
 
 	if (Ar.IsLoading())

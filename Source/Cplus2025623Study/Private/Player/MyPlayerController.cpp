@@ -9,6 +9,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/MyAttributeSet.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "Input/InputComponentBase.h"
@@ -35,7 +36,7 @@ void AMyPlayerController::PlayerTick(float DeltaTime)
 	AutoRun();
 }
 
-void AMyPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+void AMyPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter, bool IsBlockedHit, bool IsCriticalHit)
 {
 	//首先对参数进行判断，以及对类判断，这里确保执行逻辑时，目标角色还没有被销毁,但为什么是目标角色?如果目标角色被销毁了就不能显示了吗?
 	if(IsValid(TargetCharacter) && DamageTextComponentClass)
@@ -47,7 +48,7 @@ void AMyPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AC
 		//在获取到位置后，然后将其和角色分离，防止角色移动，伤害数字也跟随移动。
 		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform); //先附加到角色身上，使用角色位置
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform); //然后从角色身上分离，保证在一个位置播放完成动画
-		DamageText->SetDamageText(DamageAmount); //设置显示的伤害数字
+		DamageText->SetDamageText(DamageAmount,IsBlockedHit,IsCriticalHit); //设置显示的伤害数字
 		
 		
 		

@@ -4,6 +4,7 @@
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 
 
+#include "RPGAbilityTypes.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Game/MyGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -107,5 +108,41 @@ UCharacterClassInfo* UMyAbilitySystemBlueprintLibrary::GetCharacterClassInfo(con
 
 	//返回关卡的角色的配置
 	return  GameMode->CharacterClassInfo;
+
+}
+
+bool UMyAbilitySystemBlueprintLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if(const FRPGGameplayEffectContext* RPGEffectContext = static_cast<const FRPGGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return RPGEffectContext->IsBlockedHit();
+	}
+	return false;
+
+}
+
+bool UMyAbilitySystemBlueprintLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if(const FRPGGameplayEffectContext* RPGEffectContext = static_cast<const FRPGGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return RPGEffectContext->IsCriticalHit();
+	}
+	return false;
+
+}
+
+void UMyAbilitySystemBlueprintLibrary::SetIsBlockHit(FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInIsBlockedHit)
+{
+	FRPGGameplayEffectContext* RPGEffectContext = static_cast<FRPGGameplayEffectContext*>(EffectContextHandle.Get());
+	RPGEffectContext->SetIsBlockedHit(bInIsBlockedHit);
+
+}
+
+void UMyAbilitySystemBlueprintLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInIsCriticalHit)
+{
+	FRPGGameplayEffectContext* RPGEffectContext = static_cast<FRPGGameplayEffectContext*>(EffectContextHandle.Get());
+	RPGEffectContext->SetIsCriticalHit(bInIsCriticalHit);
 
 }
