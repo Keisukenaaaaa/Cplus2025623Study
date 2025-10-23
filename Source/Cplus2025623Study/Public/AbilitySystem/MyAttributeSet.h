@@ -149,12 +149,29 @@ public:
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UMyAttributeSet,Mana);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category="Resistance Attributes")
+	FGameplayAttributeData FireResistance; // 火属性抗性
+	ATTRIBUTE_ACCESSORS(UMyAttributeSet ,FireResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category="Resistance Attributes")
+	FGameplayAttributeData LightningResistance; // 雷属性抗性
+	ATTRIBUTE_ACCESSORS(UMyAttributeSet, LightningResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneResistance, Category="Resistance Attributes")
+	FGameplayAttributeData ArcaneResistance; // 魔法抗性
+	ATTRIBUTE_ACCESSORS(UMyAttributeSet, ArcaneResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category="Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance; // 物理抗性
+	ATTRIBUTE_ACCESSORS(UMyAttributeSet, PhysicalResistance);
+
 	//Meta Attributes
 	UPROPERTY(BlueprintReadOnly,  Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;//处理传入的伤害
 	ATTRIBUTE_ACCESSORS(UMyAttributeSet,IncomingDamage);
 
 
+	
 
 
 	UFUNCTION()
@@ -203,6 +220,25 @@ public:
 	
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
+
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+
+	UFUNCTION()
+	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
+
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const;
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+
+
+	/*
+	 * 属性伤害抗性
+	*/
+
+
 
 	// static void ShowFloatingText(const FEffectProperties& Props, const float Damage);
 	//显示伤害数字

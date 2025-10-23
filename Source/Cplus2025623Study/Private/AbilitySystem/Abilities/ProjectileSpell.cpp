@@ -69,6 +69,7 @@ void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 		FGameplayEffectContextHandle EffectContextHandle=SourceASC->MakeEffectContext();
 		EffectContextHandle.SetAbility(this);//设置技能
 		EffectContextHandle.AddSourceObject(Projectile); //设置GE的源
+	
 		//添加Actor列表 这个列表中的Actor怎么加的? 不是先加明中结果吗?还是这个是全地图所有的敌人表
 		TArray<TWeakObjectPtr<AActor>> Actors;
 		Actors.Add(Projectile);
@@ -82,14 +83,22 @@ void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 		//10.16 第一段
 		
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		//设置技能伤害 SetByCaller获取 通过Tag
+		const FMyGameplayTags GameplayTags = FMyGameplayTags::Get(); //获取标签单例
+		for(auto& Pair : DamageTypes)
+		{
+			const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel()); //根据等级获取技能伤害
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("火球术伤害：%f"), ScaledDamage));
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
+		}
 
-		FMyGameplayTags GameplayTags=FMyGameplayTags::Get();//获取标签单例
+	
 		// const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel()); //根据等级获取技能伤害
-		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel() + 19);
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("火球术伤害：%f"), ScaledDamage));
+		//const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel() + 19);
+		
 		
 		//UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude() //使用DataName设置 两种方式都行
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
+		//UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
 	
 		Projectile->DamageEffectHandle = SpecHandle;
 

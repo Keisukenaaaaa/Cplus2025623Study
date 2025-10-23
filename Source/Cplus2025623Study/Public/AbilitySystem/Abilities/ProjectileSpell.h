@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MyGameplayTags.h"
+#include "RPGDamageGameplayAbility.h"
 #include "AbilitySystem/Abilities/MyGameplayAbility.h"
 //#include "Actor/Projectile.h"
 #include "ProjectileSpell.generated.h"
@@ -14,7 +15,7 @@ class AProjectile;
  * 
  */
 UCLASS()
-class CPLUS2025623STUDY_API UProjectileSpell : public UMyGameplayAbility
+class CPLUS2025623STUDY_API UProjectileSpell : public URPGDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -25,8 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AProjectile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
+	
 
 	UFUNCTION(BlueprintCallable,Category="Projectile")
 	void SpawnProjectile(const FVector& ProjectileTargetLocation);

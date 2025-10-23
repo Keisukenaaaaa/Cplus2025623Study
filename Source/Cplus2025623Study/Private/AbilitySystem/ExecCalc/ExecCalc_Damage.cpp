@@ -19,6 +19,12 @@ struct SDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitChance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitResistance);
+
+	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ArcaneResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
+
 	
 	
 	SDamageStatics()
@@ -30,7 +36,12 @@ struct SDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, CriticalHitChance, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, CriticalHitDamage, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, CriticalHitResistance, Target, false);
-		
+
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, FireResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, LightningResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, ArcaneResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMyAttributeSet, PhysicalResistance, Target, false);
+	
 		
 	}
 
@@ -52,6 +63,11 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitChanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistanceDef);
+	
+	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ArcaneResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
 
 }
 
@@ -96,8 +112,56 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	//从Set by Caller 获取Damage的伤害值
 	float Damage = Spec.GetSetByCallerMagnitude(FMyGameplayTags::Get().Damage);
-	
 
+	//10.23添加属性抗性代码
+	const FMyGameplayTags& GameplayTags = FMyGameplayTags::Get();
+
+	// 存储标签和属性快照对应的Map
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
+    
+	// 添加标签和属性快照对应的数据
+	TagsToCaptureDefs.Add(GameplayTags.Attributes_Resistance_Fire, DamageStatics().FireResistanceDef);
+	TagsToCaptureDefs.Add(GameplayTags.Attributes_Resistance_Lightning, DamageStatics().LightningResistanceDef);
+	TagsToCaptureDefs.Add(GameplayTags.Attributes_Resistance_Arcane, DamageStatics().ArcaneResistanceDef);
+	TagsToCaptureDefs.Add(GameplayTags.Attributes_Resistance_Physical, DamageStatics().PhysicalResistanceDef);
+
+	float TotalDamage = 0.f; // 用于累计所有类型的伤害
+
+	// 遍历所有伤害类型和抗性类型的对应关系
+	for(const TTuple<FGameplayTag, FGameplayTag>& Pair : GameplayTags.DamageTypesToResistance)
+	{
+		const FGameplayTag DamageType = Pair.Key;
+		const FGameplayTag ResistanceType = Pair.Value;
+        
+		// 检查对应的属性快照是否设置，防止报错
+		checkf(TagsToCaptureDefs.Contains(ResistanceType), 
+			TEXT("在ExecCalc_Damage中，无法获取到Tag[%s]对应的属性快照"), *ResistanceType.ToString());
+        
+		// 通过抗性标签获取到属性快照
+		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceType];
+        
+		// 获取抗性值
+		float Resistance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);
+		Resistance = FMath::Clamp(Resistance, 0.f, 100.f); // 将抗性限制在0到100
+        
+		// 通过Tag获取对应伤害类型的值，如果没设置SetByCaller将获取0
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageType, false, 0.f);
+        
+		if (DamageTypeValue > 0.f) // 只有设置了该类型伤害才计算
+		{
+			// 通过抗性计算出能够对角色造成的伤害值
+			DamageTypeValue *= (100.f - Resistance) / 100.f;
+			// 将每种属性伤害值合并进行后续计算
+			TotalDamage += DamageTypeValue;
+		}
+	}
+
+	// 如果设置了多种伤害类型，使用TotalDamage；否则使用基础的Damage值
+	if (TotalDamage > 0.f)
+	{
+		Damage = TotalDamage;
+	}
 	
 	//--------------------处理格挡路--------------------
 	//获取格挡率，如果触发格挡，伤害减少一半  先获取到伤害值,然后计算各种减伤 但他是什么时候输出的呢?所以我把输出函数先后移一下

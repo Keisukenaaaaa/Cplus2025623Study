@@ -60,7 +60,20 @@ public:
  */
 	FGameplayTag Damage;//伤害 标签
 
+	FGameplayTag Damage_Fire; //火属性伤害 标签
+	FGameplayTag Damage_Lightning; //雷属性伤害 标签
+	FGameplayTag Damage_Arcane; //魔法伤害 标签
+	FGameplayTag Damage_Physical; //物理伤害 标签
+
 	FGameplayTag Effects_HitReact;//受击 标签
+	//属性伤害抗性
+	FGameplayTag Attributes_Resistance_Fire; //火属性伤害抵抗 标签
+	FGameplayTag Attributes_Resistance_Lightning; //雷属性伤害抵抗 标签
+	FGameplayTag Attributes_Resistance_Arcane; //魔法伤害抵抗 标签
+	FGameplayTag Attributes_Resistance_Physical; //物理伤害抵抗 标签
+
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance; //属性伤害标签对应属性抵抗标签
+
 
 
 private:
