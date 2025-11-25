@@ -71,11 +71,8 @@ void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点�
 	//初始化角色ASC
 	InitAbilityActorInfo();
 
-	//初始化角色的技能--添加HasAuthority来让他复制到客户端
-	if (HasAuthority())
-	{
-		UMyAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
-	}
+	//初始化角色的技能
+	UMyAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 	
 	if(UMyUserWidget* UserWidget = Cast<UMyUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -115,10 +112,8 @@ void AEnemyCharacterBase::InitAbilityActorInfo()
 	Cast<UMyAbilitySystemComponentBase>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	//通过GE初始角色的属性
-	if (HasAuthority())
-	{
-		InitializeDefaultAttributes();
-	}
+	InitializeDefaultAttributes();
+
 	//打印生命值查看属性
 	UE_LOG(LogTemp, Warning, TEXT("%s 的生命值为 %f"), *this->GetName(), Cast<UMyAttributeSet>(AttributeSet)->GetHealth())
 }
