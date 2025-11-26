@@ -134,10 +134,15 @@ void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const flo
 	//调用显示伤害数字
 	if(Props.SourceCharacter != Props.TargetCharacter)
 	{
-		//然后获取到目标的PlayerController，调用函数即可
-		if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		// //然后获取到目标的PlayerController，调用函数即可
+		// if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		// {
+		// 	PC->ShowDamageNumber(Damage, Props.TargetCharacter,IsBlockedHit,IsCriticalHit); //调用显示伤害数字
+		// }改为下文可以同步到客户端版无法直接使用静态函数去获取，我们可以直接从SourceCharacter上面获取
+
+		if(AMyPlayerController* PC = Cast<AMyPlayerController>(Props.SourceCharacter->Controller))
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter,IsBlockedHit,IsCriticalHit); //调用显示伤害数字
+			PC->ShowDamageNumber(Damage,Props.TargetCharacter,IsBlockedHit,IsCriticalHit);//调用显示伤害数字
 		}
 	}
 }
