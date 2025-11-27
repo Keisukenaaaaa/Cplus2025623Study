@@ -27,6 +27,7 @@ class CPLUS2025623STUDY_API UMyAbilitySystemComponentBase : public UAbilitySyste
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHold(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AbilitySystem/MyAttributeSet.h"
@@ -32,15 +32,15 @@ void UMyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, fl
 
 void UMyAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props)
 {
-	//source 效果的所有者 Target 效果应用的目标
+	//source 鏁堟灉鐨勬墍鏈夎€?Target 鏁堟灉搴旂敤鐨勭洰鏍?
 	Props.EffectContextHandle=Data.EffectSpec.GetContext();
 	Props.SourceASC=Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
-	//获取效果所有者的相关对象
+	//鑾峰彇鏁堟灉鎵€鏈夎€呯殑鐩稿叧瀵硅薄
 	if(IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
 	{
-		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get(); //获取Actor
-		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get(); //获取PlayerController
+		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get(); //鑾峰彇Actor
+		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get(); //鑾峰彇PlayerController
 		if(Props.SourceController == nullptr && Props.SourceAvatarActor != nullptr)
 		{
 			if(const APawn* Pawn = Cast<APawn>(Props.SourceAvatarActor))
@@ -74,14 +74,14 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(  FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-		UE_LOG(LogTemp, Warning, TEXT("%s 的生命值发生了修改，当前生命值：%f"), *Props.TargetAvatarActor->GetName(), GetHealth());//测试用
+		UE_LOG(LogTemp, Warning, TEXT("%s 鐨勭敓鍛藉€煎彂鐢熶簡淇敼锛屽綋鍓嶇敓鍛藉€硷細%f"), *Props.TargetAvatarActor->GetName(), GetHealth());//娴嬭瘯鐢?
 	}
 
 	if(Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana ( FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 	}
-	//自己写代码的时候把这个提前了然后把生命赋予注释了,导致完全没有初始生命
+	//鑷繁鍐欎唬鐮佺殑鏃跺€欐妸杩欎釜鎻愬墠浜嗙劧鍚庢妸鐢熷懡璧嬩簣娉ㄩ噴浜?瀵艰嚧瀹屽叏娌℃湁鍒濆鐢熷懡
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float LocalInComingDamage=GetIncomingDamage();
@@ -92,40 +92,40 @@ void UMyAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		{
 			const float NewHealth=GetHealth()-LocalInComingDamage;
 			SetHealth(  FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-			const bool bFatal= NewHealth <=0.f;//如果血量小于0 角色将会死亡
-			//测试Tag--hitReact所用 完全不懂
+			const bool bFatal= NewHealth <=0.f;//濡傛灉琛€閲忓皬浜? 瑙掕壊灏嗕細姝讳骸
+			//娴嬭瘯Tag--hitReact鎵€鐢?瀹屽叏涓嶆噦
 			// if(!bFatal)
 			// {
 			// 	FGameplayTagContainer TagContainer;
 			// 	TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
-			// 	Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
+			// 	Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //鏍规嵁tag鏍囩婵€娲绘妧鑳?
 			// }
 			if (bFatal)
 			{
-				//调用死亡函数
+				//璋冪敤姝讳骸鍑芥暟
 				ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetAvatarActor);
 				if (CombatInterface)
 				{
 					CombatInterface->Die();
 				}
 			}
-			//如果没死 激活受击技能
+			//濡傛灉娌℃ 婵€娲诲彈鍑绘妧鑳?
 			else
 			{
-				//原来这就是激活受击技能的代码
+				//鍘熸潵杩欏氨鏄縺娲诲彈鍑绘妧鑳界殑浠ｇ爜
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FMyGameplayTags::Get().Effects_HitReact);
-				//应用受击前取消前次受击,从而尝试新的受击激活
+				//搴旂敤鍙楀嚮鍓嶅彇娑堝墠娆″彈鍑?浠庤€屽皾璇曟柊鐨勫彈鍑绘縺娲?
 				Props.TargetASC->CancelAbilities(&TagContainer);
-				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //根据tag标签激活技能
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer); //鏍规嵁tag鏍囩婵€娲绘妧鑳?
 			}
 
-			//获取格挡和暴击
+			//鑾峰彇鏍兼尅鍜屾毚鍑?
 			const bool IsBlockedHit = UMyAbilitySystemBlueprintLibrary::IsBlockedHit(Props.EffectContextHandle);
 			const bool IsCriticalHit = UMyAbilitySystemBlueprintLibrary::IsCriticalHit(Props.EffectContextHandle);
 		
 			ShowFloatingText(Props,LocalInComingDamage,IsBlockedHit,IsCriticalHit);
-			//这些个Props是什么 前面是定义了,但是是哪来的有什么用
+			//杩欎簺涓狿rops鏄粈涔?鍓嶉潰鏄畾涔変簡,浣嗘槸鏄摢鏉ョ殑鏈変粈涔堢敤
 		}
 	}
 }
@@ -134,18 +134,19 @@ void UMyAttributeSet::ShowFloatingText(const FEffectProperties& Props, const flo
 	//调用显示伤害数字
 	if(Props.SourceCharacter != Props.TargetCharacter)
 	{
-		//然后获取到目标的PlayerController，调用函数即可
-		if(AMyPlayerController* PC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		//优先尝试在源角色的本地控制器上显示
+		if(AMyPlayerController* PC = Cast<AMyPlayerController>(Props.SourceCharacter->GetController()))
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter,IsBlockedHit,IsCriticalHit); //调用显示伤害数字
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter,IsBlockedHit,IsCriticalHit);
+			return;
+		}
+		//否则尝试使用目标角色的控制器（例如被本地客户端拥有时）
+		if(AMyPlayerController* PC = Cast<AMyPlayerController>(Props.TargetCharacter->GetController()))
+		{
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter,IsBlockedHit,IsCriticalHit);
 		}
 	}
 }
-
-
-
-
-
 UMyAttributeSet::UMyAttributeSet()
 {
 	const FMyGameplayTags& GameplayTags = FMyGameplayTags::Get();
@@ -176,13 +177,13 @@ UMyAttributeSet::UMyAttributeSet()
 
 void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);//这个super的对象怎么确定的
-	//主要属性
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);//杩欎釜super鐨勫璞℃€庝箞纭畾鐨?
+	//涓昏灞炴€?
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Strength, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Resilience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
-	//次级属性
+	//娆＄骇灞炴€?
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 
@@ -198,7 +199,7 @@ void UMyAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	//vital attribute
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, Mana, COND_None, REPNOTIFY_Always);
-	//抗性属性
+	//鎶楁€у睘鎬?
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, LightningResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMyAttributeSet, ArcaneResistance, COND_None, REPNOTIFY_Always);
@@ -305,5 +306,6 @@ void UMyAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& Old
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMyAttributeSet, PhysicalResistance, OldPhysicalResistance);
 }
+
 
 
