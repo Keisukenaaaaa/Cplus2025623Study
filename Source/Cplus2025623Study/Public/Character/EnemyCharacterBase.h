@@ -10,6 +10,8 @@
 #include "EnemyCharacterBase.generated.h"
 
 class UWidgetComponent;
+class UBehaviorTree;
+class ARPGAIController;
 /**
  * 
  */
@@ -69,4 +71,12 @@ protected:
 //private: 此处有报错 说无法让BlueprintReadonly在 private中使用	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Class Defaults")
 	int32 Level=1;
+
+	UPROPERTY(EditAnywhere, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<ARPGAIController> RPGAIController;
+
+	virtual void PossessedBy(AController* NewController) override;
 };

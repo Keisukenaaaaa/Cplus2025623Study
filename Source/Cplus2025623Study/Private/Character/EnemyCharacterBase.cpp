@@ -8,6 +8,9 @@
 #include "AbilitySystem/MyAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/MyAbilitySystemComponentBase.h"
 #include "AbilitySystem/MyAttributeSet.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Character/RPGAIController.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/MyUserWidget.h"
@@ -121,4 +124,54 @@ void AEnemyCharacterBase::InitAbilityActorInfo()
 void AEnemyCharacterBase::InitializeDefaultAttributes() const
 {
 	UMyAbilitySystemBlueprintLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
+}
+
+void AEnemyCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// 如果你是多人游戏，保留这句；如果是单人测试也不会有坏处
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	RPGAIController = Cast<ARPGAIController>(NewController);
+	if (!RPGAIController)
+	{
+		UE_LOG(LogTemp, Error, TEXT("EnemyCharacterBase::PossessedBy - RPGAIController is null on %s"),
+			*GetName());
+		return;
+	}
+
+	if (!BehaviorTree)
+	{
+		UE_LOG(LogTemp, Error, TEXT("EnemyCharacterBase::PossessedBy - BehaviorTree is null on %s"),
+			*GetName());
+		return;
+	}
+
+	// 先通过 UseBlackboard 创建并初始化 BlackboardComponent
+	UBlackboardComponent* BlackboardComp = nullptr;
+	if (BehaviorTree->BlackboardAsset)
+	{
+		RPGAIController->UseBlackboard(BehaviorTree->BlackboardAsset, BlackboardComp);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyCharacterBase::PossessedBy - BehaviorTree %s has no BlackboardAsset"),
+			*BehaviorTree->GetName());
+	}
+
+	// 尝试运行行为树
+	if (!RPGAIController->RunBehaviorTree(BehaviorTree))
+	{
+		UE_LOG(LogTemp, Error, TEXT("EnemyCharacterBase::PossessedBy - RunBehaviorTree failed on %s"),
+			*GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("EnemyCharacterBase::PossessedBy - BehaviorTree started on %s"),
+			*GetName());
+	}
 }
