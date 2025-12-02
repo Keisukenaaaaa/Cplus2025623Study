@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/EnemyCharacterBase.h"
@@ -21,13 +20,26 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	
 	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponentBase>("AbilitySystemComponent");
-	AbilitySystemComponent->SetIsReplicated(true); //设置组件用于在网络上复制
+	AbilitySystemComponent->SetIsReplicated(true); //????????????????????????????????????
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	AttributeSet = CreateDefaultSubobject<UMyAttributeSet>("AttributeSet");
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
-	HealthBar->SetupAttachment(GetRootComponent()); //将血条附件到根节点上
+	HealthBar->SetupAttachment(GetRootComponent()); //??????????????????????????????
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = ARPGAIController::StaticClass();
+
+// Enemy uses movement direction to orient
+    bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+	{
+		MoveComp->bUseControllerDesiredRotation = true;
+	}
 }
 
 void AEnemyCharacterBase::HighlightActor()
@@ -51,30 +63,37 @@ int32 AEnemyCharacterBase::GetPlayerLevel()
 	return Level;
 }
 
-void AEnemyCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)//如果数量大于0,择期移动速度为0
+void AEnemyCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)//??????????????????0,?????????????????????
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	if (RPGAIController)
+	{
+		if (UBlackboardComponent* BlackboardComp = RPGAIController->GetBlackboardComponent())
+		{
+			BlackboardComp->SetValueAsBool("HitReacting", bHitReacting);
+		}
+	}
 }
 
 void AEnemyCharacterBase::Die()
 {
 	SetLifeSpan(LifeSpan);
-	Super::Die();//为什么此处需要super?是继承父级的原本的Die吗?
+	Super::Die();//?????????????????????super????????????????????????????Die???
 }
 
-/////带研读线
-void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点研读
+/////????????????
+void AEnemyCharacterBase::BeginPlay()//???????????????.17???????????????????????????
 {
 	Super::BeginPlay();
 
-	//设置角色的初始移动速度
+	//?????????????????????????????????
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
-	//初始化角色ASC
+	//???????????????ASC
 	InitAbilityActorInfo();
 
-	//初始化角色的技能
+	//????????????????????????
 	UMyAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 	
 	if(UMyUserWidget* UserWidget = Cast<UMyUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -83,7 +102,7 @@ void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点�
 	}
 	if(const UMyAttributeSet* AS = Cast<UMyAttributeSet>(AttributeSet))
 	{
-		//监听血量变化
+		//??????????????????
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)
 			{
@@ -97,11 +116,11 @@ void AEnemyCharacterBase::BeginPlay()//这段代码在9.17更新后需要重点�
 			}
 		);
 
-		//在AEnemyBase::BeginPlay()中，我们设置对监听函数的回调
+		//???AEnemyBase::BeginPlay()??????????????????????????????????????????
 		AbilitySystemComponent->RegisterGameplayTagEvent(FMyGameplayTags::Get().Effects_HitReact,EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this,
 			&ThisClass::HitReactTagChanged);
-		//初始化血量
+		//???????????????
 		OnHealthChanged.Broadcast(AS->GetHealth());
 		OnMaxHealthChanged.Broadcast(AS->GetMaxHealth());
 	}
@@ -114,11 +133,11 @@ void AEnemyCharacterBase::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UMyAbilitySystemComponentBase>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	//通过GE初始角色的属性
+	//??????GE?????????????????????
 	InitializeDefaultAttributes();
 
-	//打印生命值查看属性
-	UE_LOG(LogTemp, Warning, TEXT("%s 的生命值为 %f"), *this->GetName(), Cast<UMyAttributeSet>(AttributeSet)->GetHealth())
+	//???????????????????????????
+	UE_LOG(LogTemp, Warning, TEXT("%s ??????????????? %f"), *this->GetName(), Cast<UMyAttributeSet>(AttributeSet)->GetHealth())
 }
 
 void AEnemyCharacterBase::InitializeDefaultAttributes() const
@@ -130,7 +149,7 @@ void AEnemyCharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// 如果你是多人游戏，保留这句；如果是单人测试也不会有坏处
+	// 只在服务器执行 AI 初始化
 	if (!HasAuthority())
 	{
 		return;
@@ -139,39 +158,40 @@ void AEnemyCharacterBase::PossessedBy(AController* NewController)
 	RPGAIController = Cast<ARPGAIController>(NewController);
 	if (!RPGAIController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("EnemyCharacterBase::PossessedBy - RPGAIController is null on %s"),
-			*GetName());
 		return;
 	}
 
+	// 行为树必须存在
 	if (!BehaviorTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("EnemyCharacterBase::PossessedBy - BehaviorTree is null on %s"),
-			*GetName());
 		return;
 	}
 
-	// 先通过 UseBlackboard 创建并初始化 BlackboardComponent
-	UBlackboardComponent* BlackboardComp = nullptr;
-	if (BehaviorTree->BlackboardAsset)
+	// 黑板资源必须存在
+	if (!BehaviorTree->BlackboardAsset)
 	{
-		RPGAIController->UseBlackboard(BehaviorTree->BlackboardAsset, BlackboardComp);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyCharacterBase::PossessedBy - BehaviorTree %s has no BlackboardAsset"),
-			*BehaviorTree->GetName());
+		return;
 	}
 
-	// 尝试运行行为树
+	// 初始化黑板（由 UseBlackboard 自动创建 BlackboardComponent）
+	UBlackboardComponent* BlackboardComp = nullptr;
+	RPGAIController->UseBlackboard(BehaviorTree->BlackboardAsset, BlackboardComp);
+
+	// 行为树必须成功启动
 	if (!RPGAIController->RunBehaviorTree(BehaviorTree))
 	{
-		UE_LOG(LogTemp, Error, TEXT("EnemyCharacterBase::PossessedBy - RunBehaviorTree failed on %s"),
-			*GetName());
+		return;
 	}
-	else
+
+	// 根据教程，此处只做最基本的黑板初始化
+	if (BlackboardComp)
 	{
-		UE_LOG(LogTemp, Log, TEXT("EnemyCharacterBase::PossessedBy - BehaviorTree started on %s"),
-			*GetName());
+		BlackboardComp->SetValueAsBool("RangedAttacker", bRangedAttacker);
+		BlackboardComp->SetValueAsBool("HitReacting", bHitReacting);
 	}
 }
+
+
+
+
+

@@ -50,6 +50,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	float BaseWalkSpeed = 250.f; //当前角色的最大移动速度
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	bool bRangedAttacker = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	float AttackRange = 800.f;
+
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag,int32 NewCount);//为什么此处是委托函数??
 

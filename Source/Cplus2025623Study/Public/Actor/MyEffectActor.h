@@ -52,6 +52,13 @@ protected:
 	UFUNCTION(BlueprintCallable) 
 	void OnEndOverlap(AActor* TargetActor);
 
+	// Instant 和 Duration 的 GE 在应用后，此物体是否需要被销毁
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
+	bool bDestroyOnEffectApplication = true;
+
+	// 敌人是否能够拾取/承受此物体的效果
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
+	bool bApplyEffectsToEnemies = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
 	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass; //生成GameplayEffect的类
@@ -74,13 +81,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
 	EEffectRemovalPolicy InfinityEffectRemovalPolicy = EEffectRemovalPolicy::RemoveOnEndOverlap;
 
+	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
 	float ActorLevel=1.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
-	float ActorRemoveTier=1.f;
-	
-	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 	
 
 	
