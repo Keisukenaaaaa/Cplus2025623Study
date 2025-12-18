@@ -7,7 +7,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5f6d9c58-177d-456c-943e-5c000d02a1d0" name="更改" comment="" />
+    <list default="true" id="5f6d9c58-177d-456c-943e-5c000d02a1d0" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Cplus2025623Study.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cplus2025623Study.dir/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -54,7 +56,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "Uproject.Cplus2025623Study.executor": "Debug",
+    "Uproject.Cplus2025623Study.executor": "Run",
     "git-widget-placeholder": "7.3再次崩溃",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -151,6 +153,7 @@
       <workItem from="1757508720351" duration="618000" />
       <workItem from="1761053755526" duration="40000" />
       <workItem from="1764594732446" duration="5668000" />
+      <workItem from="1765897522980" duration="677000" />
     </task>
     <servers />
   </component>
